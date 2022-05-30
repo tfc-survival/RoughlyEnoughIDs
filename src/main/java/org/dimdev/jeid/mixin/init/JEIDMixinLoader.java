@@ -40,7 +40,7 @@ public class JEIDMixinLoader {
 
         // Add and reload mixin configs
         Mixins.addConfiguration("mixins.jeid.modsupport.json");
-//        Mixins.addConfiguration("mixins.jeid.twilightforest.json");
+        Mixins.addConfiguration("mixins.jeid.twilightforest.json");
 
         try {
             // This will very likely break on the next major mixin release.

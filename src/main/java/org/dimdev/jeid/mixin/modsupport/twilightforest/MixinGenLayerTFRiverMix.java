@@ -9,7 +9,7 @@ import twilightforest.world.layer.GenLayerTFRiverMix;
 @Pseudo
 @Mixin(GenLayerTFRiverMix.class)
 public class MixinGenLayerTFRiverMix {
-    @ModifyConstant(method = "func_75904_a", constant = @Constant(intValue = 255), remap = false)
+    @ModifyConstant(method = "getInts", constant = @Constant(intValue = 255))
     private int getBitMask(int oldValue) {
         return 0xFFFFFFFF;
     }
