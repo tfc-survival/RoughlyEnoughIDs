@@ -1,6 +1,5 @@
 package org.dimdev.jeid.mixin.modsupport.cubicchunks;
 
-//import io.github.opencubicchunks.cubicchunks.core.server.chunkio.IONbtWriter;
 import io.github.opencubicchunks.cubicchunks.core.world.cube.Cube;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -9,7 +8,7 @@ import net.minecraft.world.chunk.NibbleArray;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.dimdev.jeid.INewBlockStateContainer;
 import org.dimdev.jeid.INewChunk;
-import org.dimdev.jeid.Utils;
+import org.dimdev.jeid.modsupport.cubicchunks.INewCube;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -18,18 +17,18 @@ import org.spongepowered.asm.mixin.Pseudo;
 @Mixin(targets = "io.github.opencubicchunks.cubicchunks.core.server.chunkio.IONbtWriter")
 public class MixinIONbtWriter {
 
-    // @Overwrite
-    // private static void writeBiomes(Chunk column, NBTTagCompound nbt) {// biomes
-    //     INewChunk newChunk = (INewChunk) column;
-    //     nbt.setIntArray("Biomes", newChunk.getIntBiomeArray());
-    // }
+    @Overwrite
+    private static void writeBiomes(Chunk column, NBTTagCompound nbt) {// column biomes
+        nbt.setIntArray("Biomes", ((INewChunk)column).getIntBiomeArray());
+    }
 
-    // @Overwrite
-    // private static void writeBiomes(Cube cube, NBTTagCompound nbt) {// biomes
-    //     byte[] biomes = cube.getBiomeArray();
-    //     if (biomes != null)
-    //         nbt.setByteArray("Biomes", biomes);
-    // }
+    @Overwrite
+    private static void writeBiomes(Cube cube, NBTTagCompound nbt) {// cube biomes
+        INewCube newCube = (INewCube) cube;
+        int[] biomes = newCube.getIntBiomeArray();
+        if (biomes != null)
+            nbt.setIntArray("Biomes", biomes);
+    }
 
     @Overwrite
     private static void writeBlocks(Cube cube, NBTTagCompound cubeNbt) {

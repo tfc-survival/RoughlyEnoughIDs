@@ -5,11 +5,13 @@ import io.github.opencubicchunks.cubicchunks.core.server.chunkio.IONbtReader;
 import io.github.opencubicchunks.cubicchunks.core.world.cube.Cube;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.NibbleArray;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.World;
 import org.dimdev.jeid.INewBlockStateContainer;
-import org.dimdev.jeid.Utils;
+import org.dimdev.jeid.INewChunk;
+import org.dimdev.jeid.modsupport.cubicchunks.INewCube;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -17,6 +19,20 @@ import org.spongepowered.asm.mixin.Pseudo;
 @Pseudo
 @Mixin(IONbtReader.class)
 public class MixinIONbtReader {
+
+    @Overwrite
+    private static void readBiomes(NBTTagCompound nbt, Chunk column) {// column biomes
+        System.arraycopy(nbt.getIntArray("Biomes"), 0, ((INewChunk)column).getIntBiomeArray(), 0, Cube.SIZE * Cube.SIZE);
+    }
+
+    @Overwrite
+    private static void readBiomes(Cube cube, NBTTagCompound nbt) {// cube biomes
+        if (nbt.hasKey("Biomes"))
+        {
+            INewCube newCube = (INewCube) cube;
+            newCube.setIntBiomeArray(nbt.getIntArray("Biomes"));
+        }
+    }
 
     @Overwrite
     private static void readBlocks(NBTTagCompound nbt, World world, Cube cube) {
