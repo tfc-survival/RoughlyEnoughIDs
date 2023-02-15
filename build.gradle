@@ -133,6 +133,7 @@ dependencies {
     compileOnly fg.deobf( "curse.maven:bewitchment-285439:3256343" )
 
     compileOnly fg.deobf( "curse.maven:CubicChunks-292243:3546640" )
+    compileOnly fg.deobf( "curse.maven:RTGU-648514:4396319" )
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
