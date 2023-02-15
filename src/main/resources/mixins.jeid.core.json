@@ -6,19 +6,19 @@
   "minVersion": "0.6",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinGameData",
-    "MixinStatList",
-    "MixinBlockStateContainer",
     "MixinAnvilChunkLoader",
     "MixinBlock",
+    "MixinBlockStateContainer",
     "MixinChunk",
-    "MixinSPacketChunkData",
-    "MixinGenLayerVoronoiZoom",
     "MixinChunkPrimer",
     "MixinChunkProviderServer",
-    "MixinWorldInfo",
     "MixinEnchantmentHelper",
-    "MixinItemEnchantedBook"
+    "MixinGameData",
+    "MixinGenLayerVoronoiZoom",
+    "MixinItemEnchantedBook",
+    "MixinSPacketChunkData",
+    "MixinStatList",
+    "MixinWorldInfo"
   ],
   "client": [
     "client.MixinChunk",
