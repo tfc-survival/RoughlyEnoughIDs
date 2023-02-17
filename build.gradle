@@ -24,7 +24,7 @@ apply plugin: 'org.spongepowered.mixin'
 def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
 def versionSuffix = travisBuildNumber != null ? travisBuildNumber : "SNAPSHOT"
 
-version "2.0.3"
+version "2.0.4"
 group "org.dimdev.jeid"
 archivesBaseName = "RoughlyEnoughIDs"
 

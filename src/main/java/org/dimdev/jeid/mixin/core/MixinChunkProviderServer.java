@@ -5,6 +5,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraftforge.fml.common.Loader;
+
 import org.dimdev.jeid.INewChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,7 +34,7 @@ public class MixinChunkProviderServer {
      */
     @Inject(method = "provideChunk", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/gen/IChunkGenerator;generateChunk(II)Lnet/minecraft/world/chunk/Chunk;"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void initializeBiomeArray(int x, int z, CallbackInfoReturnable<Chunk> cir, Chunk chunk, long chunkPos) {
-        if (!(world.getBiomeProvider() instanceof BiomeProviderRTG)) {
+        if (!Loader.isModLoaded("rtg") || !(world.getBiomeProvider() instanceof BiomeProviderRTG)) {
             Biome[] biomes = world.getBiomeProvider().getBiomes(reusableBiomeList, x * 16, z * 16, 16, 16);
 
             INewChunk newChunk = (INewChunk) chunk;
