@@ -2,6 +2,7 @@ package org.dimdev.jeid.mixin.core;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.BitArray;
 import net.minecraft.world.chunk.BlockStateContainer;
 import net.minecraft.world.chunk.IBlockStatePalette;
@@ -26,6 +27,7 @@ public abstract class MixinBlockStateContainer implements INewBlockStateContaine
     @Shadow @SuppressWarnings("unused") protected abstract void setBits(int bitsIn);
 
     private int[] temporaryPalette; // index -> state id
+    private NibbleArray add2; // NEID format
 
     @Override
     public int[] getTemporaryPalette() {
@@ -35,6 +37,11 @@ public abstract class MixinBlockStateContainer implements INewBlockStateContaine
     @Override
     public void setTemporaryPalette(int[] temporaryPalette) {
         this.temporaryPalette = temporaryPalette;
+    }
+
+    @Override
+    public void setLegacyAdd2(NibbleArray add2) {
+        this.add2 = add2;
     }
 
     /**
@@ -79,18 +86,31 @@ public abstract class MixinBlockStateContainer implements INewBlockStateContaine
     @SuppressWarnings("deprecation")
     @Inject(method = "setDataFromNBT", at = @At("HEAD"), cancellable = true)
     private void newSetDataFromNBT(byte[] blockIds, NibbleArray data, NibbleArray blockIdExtension, CallbackInfo ci) {
-        if (temporaryPalette == null) return; // Read containers in in pallette format only if the container has a palette (has a palette)
+        if (temporaryPalette == null) { // Read containers in in pallette format only if the container has a palette (has a palette)
+            for (int index = 0; index < 4096; ++index) {
+                int x = index & 15;
+                int y = index >> 8 & 15;
+                int z = index >> 4 & 15;
+                int toAdd = (blockIdExtension == null) ? 0 : blockIdExtension.get(x, y, z);
+                if (add2 != null) {
+                    toAdd = ((toAdd & 0xF) | add2.get(x, y, z) << 4);
+                }
+                final int id = toAdd << 12 | (blockIds[index] & 0xFF) << 4 | (data.get(x, y, z) & 0xF);
+                IBlockState bs = (id == 0) ? Blocks.AIR.getDefaultState() : Block.BLOCK_STATE_IDS.getByValue(id);
+                set(index, bs);
+            }
+        } else {
+            for (int index = 0; index < 4096; ++index) {
+                int x = index & 15;
+                int y = index >> 8 & 15;
+                int z = index >> 4 & 15;
+                int paletteID = (blockIds[index] & 255) << 4 | data.get(x, y, z);
 
-        for (int index = 0; index < 4096; ++index) {
-            int x = index & 15;
-            int y = index >> 8 & 15;
-            int z = index >> 4 & 15;
-            int paletteID = (blockIds[index] & 255) << 4 | data.get(x, y, z);
+                set(index, Block.BLOCK_STATE_IDS.getByValue(temporaryPalette[paletteID]));
+            }
 
-            set(index, Block.BLOCK_STATE_IDS.getByValue(temporaryPalette[paletteID]));
+            temporaryPalette = null;
         }
-
-        temporaryPalette = null;
         ci.cancel();
     }
 }

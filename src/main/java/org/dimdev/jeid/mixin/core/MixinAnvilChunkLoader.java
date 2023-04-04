@@ -26,6 +26,8 @@ public class MixinAnvilChunkLoader {
                                 NBTTagCompound storageNBT, int y, ExtendedBlockStorage extendedBlockStorage) {
         int[] palette = storageNBT.hasKey("Palette", 11) ? storageNBT.getIntArray("Palette") : null;
         ((INewBlockStateContainer) extendedBlockStorage.getData()).setTemporaryPalette(palette);
+        NibbleArray add2 = storageNBT.hasKey("Add2", 7) ? new NibbleArray(storageNBT.getByteArray("Add2")) : null;
+        ((INewBlockStateContainer) extendedBlockStorage.getData()).setLegacyAdd2(add2);
     }
 
     /** @reason Write palette to NBT for JustEnoughIDs BlockStateContainers. */
