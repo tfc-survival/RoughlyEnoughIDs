@@ -99,7 +99,7 @@ public abstract class MixinBlockStateContainer implements INewBlockStateContaine
                 IBlockState bs = (id == 0) ? Blocks.AIR.getDefaultState() : Block.BLOCK_STATE_IDS.getByValue(id);
                 set(index, bs);
             }
-        } {
+        } else {
             for (int index = 0; index < 4096; ++index) {
                 int x = index & 15;
                 int y = index >> 8 & 15;
