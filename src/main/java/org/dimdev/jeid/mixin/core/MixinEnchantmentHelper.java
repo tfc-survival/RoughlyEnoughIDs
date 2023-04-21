@@ -1,114 +1,76 @@
 package org.dimdev.jeid.mixin.core;
 
-import com.google.common.collect.Maps;
+import java.util.Iterator;
+import java.util.Map;
+
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 
-import java.util.Map;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(EnchantmentHelper.class)
-public class MixinEnchantmentHelper {
+public class MixinEnchantmentHelper
+{
+    // Captured local variables
+    private static int idGEL;
+    private static int idGE;
+    private static int idAEM;
 
-    /** @reason Mojang really likes modifying their original type into something else **/
-    @Overwrite
-    public static int getEnchantmentLevel(Enchantment enchID, ItemStack stack)
+    @Inject(method = "getEnchantmentLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;getShort(Ljava/lang/String;)S", ordinal = 0), locals = LocalCapture.CAPTURE_FAILHARD)
+    private static void captureNBTTagCompoundGEL(Enchantment enchID, ItemStack stack, CallbackInfoReturnable<Integer> cir, NBTTagList nbttaglist, int i, NBTTagCompound nbttagcompound)
     {
-        if (stack.isEmpty())
-        {
-            return 0;
-        }
-        else
-        {
-            NBTTagList nbttaglist = stack.getEnchantmentTagList();
-
-            for (int i = 0; i < nbttaglist.tagCount(); ++i)
-            {
-                NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-                Enchantment enchantment = Enchantment.getEnchantmentByID(nbttagcompound.getInteger("id"));
-
-                if (enchantment == enchID)
-                {
-                    return nbttagcompound.getShort("lvl");
-                }
-            }
-
-            return 0;
-        }
+        idGEL = nbttagcompound.getInteger("id");
     }
 
-    /** @reason Mojang really likes modifying their original type into something else **/
-    @Overwrite
-    public static Map<Enchantment, Integer> getEnchantments(ItemStack stack)
+    @ModifyArg(method = "getEnchantmentLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/enchantment/Enchantment;getEnchantmentByID(I)Lnet/minecraft/enchantment/Enchantment;"))
+    private static int reassignIdGEL(int id)
     {
-        Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newLinkedHashMap();
-        NBTTagList nbttaglist = stack.getItem() == Items.ENCHANTED_BOOK ? ItemEnchantedBook.getEnchantments(stack) : stack.getEnchantmentTagList();
-
-        for (int i = 0; i < nbttaglist.tagCount(); ++i)
-        {
-            NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-            Enchantment enchantment = Enchantment.getEnchantmentByID(nbttagcompound.getInteger("id"));
-            map.put(enchantment, Integer.valueOf(nbttagcompound.getShort("lvl")));
-        }
-
-        return map;
+        // Ignore the id returned by getShort()
+        return idGEL;
     }
 
-    @Overwrite
-    public static void setEnchantments(Map<Enchantment, Integer> enchMap, ItemStack stack)
+    @Inject(method = "getEnchantments", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;getShort(Ljava/lang/String;)S", ordinal = 0), locals = LocalCapture.CAPTURE_FAILHARD)
+    private static void captureNBTTagCompoundGE(ItemStack stack, CallbackInfoReturnable<Map<Enchantment, Integer>> cir, Map<Enchantment, Integer> map, NBTTagList nbttaglist, int i, NBTTagCompound nbttagcompound)
     {
-        NBTTagList nbttaglist = new NBTTagList();
-
-        for (Map.Entry<Enchantment, Integer> entry : enchMap.entrySet())
-        {
-            Enchantment enchantment = entry.getKey();
-
-            if (enchantment != null)
-            {
-                NBTTagCompound nbttagcompound = new NBTTagCompound();
-                nbttagcompound.setInteger("id", Enchantment.getEnchantmentID(enchantment));
-                nbttagcompound.setShort("lvl", entry.getValue().shortValue());
-                nbttaglist.appendTag(nbttagcompound);
-
-                if (stack.getItem() == Items.ENCHANTED_BOOK) { ItemEnchantedBook.addEnchantment(stack, new EnchantmentData(enchantment, entry.getValue().shortValue())); }
-            }
-        }
-
-        if (nbttaglist.isEmpty())
-        {
-            if (stack.hasTagCompound())
-            {
-                stack.getTagCompound().removeTag("ench");
-            }
-        }
-        else if (stack.getItem() != Items.ENCHANTED_BOOK)
-        {
-            stack.setTagInfo("ench", nbttaglist);
-        }
+        idGE = nbttagcompound.getInteger("id");
     }
 
-    @Overwrite
-    private static void applyEnchantmentModifier(EnchantmentHelper.IModifier modifier, ItemStack stack)
+    @ModifyArg(method = "getEnchantments", at = @At(value = "INVOKE", target = "Lnet/minecraft/enchantment/Enchantment;getEnchantmentByID(I)Lnet/minecraft/enchantment/Enchantment;"))
+    private static int reassignIdGE(int id)
     {
-        if (!stack.isEmpty())
-        {
-            NBTTagList nbttaglist = stack.getEnchantmentTagList();
-
-            for (int i = 0; i < nbttaglist.tagCount(); ++i)
-            {
-                if (Enchantment.getEnchantmentByID(nbttaglist.getCompoundTagAt(i).getInteger("id")) != null)
-                {
-                    modifier.calculateModifier(Enchantment.getEnchantmentByID(nbttaglist.getCompoundTagAt(i).getInteger("id")), nbttaglist.getCompoundTagAt(i).getShort("lvl"));
-                }
-            }
-        }
+        // Ignore the id returned by getShort()
+        return idGE;
     }
 
+    @Inject(method = "setEnchantments", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;setShort(Ljava/lang/String;S)V", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
+    private static void reassignIdSE(Map<Enchantment, Integer> enchMap, ItemStack stack, CallbackInfo ci, NBTTagList nbttaglist, Iterator<Map.Entry<Enchantment, Integer>> var3, Map.Entry<Enchantment, Integer> entry, Enchantment enchantment, int i, NBTTagCompound nbttagcompound)
+    {
+        // setInteger again after id is set using short
+        nbttagcompound.setInteger("id", Enchantment.getEnchantmentID(enchantment));
+    }
+
+    @Inject(method = "applyEnchantmentModifier", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;getShort(Ljava/lang/String;)S", ordinal = 0), locals = LocalCapture.CAPTURE_FAILHARD)
+    private static void captureNBTTagListAEM(EnchantmentHelper.IModifier modifier, ItemStack stack, CallbackInfo ci, NBTTagList nbttaglist, int i)
+    {
+        idAEM = nbttaglist.getCompoundTagAt(i).getInteger("id");
+    }
+
+
+    @ModifyVariable(method = "applyEnchantmentModifier", at = @At(value = "STORE"), ordinal = 1)
+    private static int reassignIdAEM(int id)
+    {
+        // Ints on LVT: (ordinal = 0) = int i, (ordinal = 1) = int j
+        // Ignore the id returned by getShort()
+        return idAEM;
+    }
 }
