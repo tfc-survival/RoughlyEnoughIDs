@@ -15,7 +15,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Mixin(BlockStateContainer.class)
@@ -52,14 +55,19 @@ public abstract class MixinBlockStateContainer implements INewBlockStateContaine
     @SuppressWarnings("deprecation")
     @Inject(method = "getDataForNBT", at = @At("HEAD"), cancellable = true)
     private void newGetDataForNBT(byte[] blockIds, NibbleArray data, CallbackInfoReturnable<NibbleArray> cir) {
-        HashMap<IBlockState, Integer> stateIDMap = new HashMap<>();
-        int nextID = 0;
+        List<IBlockState> stateIDMap = new ArrayList<>(8);
         for (int index = 0; index < 4096; ++index) {
             IBlockState state = get(index);
-            Integer paletteID = stateIDMap.get(state);
+            Integer paletteID = null;
+            for (int i = 0; i < stateIDMap.size(); i++) {
+                if (stateIDMap.get(i) == state) {
+                    paletteID = i;
+                    break;
+                }
+            }
             if (paletteID == null) {
-                paletteID = nextID++;
-                stateIDMap.put(state, paletteID);
+                paletteID = stateIDMap.size();
+                stateIDMap.add(state);
             }
 
             int x = index & 15;
@@ -70,9 +78,9 @@ public abstract class MixinBlockStateContainer implements INewBlockStateContaine
             data.set(x, y, z, paletteID & 15);
         }
 
-        temporaryPalette = new int[nextID];
-        for (Map.Entry<IBlockState, Integer> entry : stateIDMap.entrySet()) {
-            temporaryPalette[entry.getValue()] = Block.BLOCK_STATE_IDS.get(entry.getKey());
+        temporaryPalette = new int[stateIDMap.size()];
+        for (int i = 0; i < stateIDMap.size(); i++) {
+            temporaryPalette[i] = Block.BLOCK_STATE_IDS.get(stateIDMap.get(i));
         }
 
         cir.setReturnValue(null);
