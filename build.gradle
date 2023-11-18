@@ -147,6 +147,8 @@ jar {
                 "FMLAT": "jeid_at.cfg"
         ])
     }
+
+    destinationDirectory = file("$rootDir/production")
 }
 
 // Example configuration to allow publishing using the maven-publish task
