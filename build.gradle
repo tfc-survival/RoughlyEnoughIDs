@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath "gradle.plugin.com.github.johnrengelman:shadow:7.1.1"
-        classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.+'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.27'
         classpath "org.spongepowered:mixingradle:0.7-SNAPSHOT"
     }
 }
