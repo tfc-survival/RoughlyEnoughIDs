@@ -16,6 +16,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.dave.compactmachines3.utility.ChunkUtils;
 import org.dave.compactmachines3.world.data.provider.AbstractExtraTileDataProvider;
 import org.dave.compactmachines3.world.data.provider.ExtraTileDataProviderRegistry;
+import org.dimdev.jeid.INewBlockStateContainer;
 import org.dimdev.jeid.INewChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -58,6 +59,8 @@ public class MixinChunkUtils {
             NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(l);
             int i1 = nbttagcompound.getByte("Y");
             ExtendedBlockStorage extendedblockstorage = new ExtendedBlockStorage(i1 << 4, flag);
+            int[] palette = nbttagcompound.hasKey("Palette", 11) ? nbttagcompound.getIntArray("Palette") : null;
+            ((INewBlockStateContainer) extendedblockstorage.getData()).setTemporaryPalette(palette);
             byte[] abyte = nbttagcompound.getByteArray("Blocks");
             NibbleArray nibblearray = new NibbleArray(nbttagcompound.getByteArray("Data"));
             NibbleArray nibblearray1 = nbttagcompound.hasKey("Add", 7) ? new NibbleArray(nbttagcompound.getByteArray("Add")) : null;
@@ -113,8 +116,10 @@ public class MixinChunkUtils {
                 byte[] abyte = new byte[4096];
                 NibbleArray nibblearray = new NibbleArray();
                 NibbleArray nibblearray1 = extendedblockstorage.getData().getDataForNBT(abyte, nibblearray);
+                int[] palette = ((INewBlockStateContainer)extendedblockstorage.getData()).getTemporaryPalette();
                 nbttagcompound.setByteArray("Blocks", abyte);
                 nbttagcompound.setByteArray("Data", nibblearray.getData());
+                nbttagcompound.setIntArray("Palette",palette);
 
                 if (nibblearray1 != null)
                 {
