@@ -24,7 +24,7 @@ apply plugin: 'org.spongepowered.mixin'
 def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
 def versionSuffix = travisBuildNumber != null ? travisBuildNumber : "SNAPSHOT"
 
-version "2.0.6"
+version "2.0.7"
 group "org.dimdev.jeid"
 archivesBaseName = "RoughlyEnoughIDs"
 
@@ -131,6 +131,7 @@ dependencies {
     compileOnly fg.deobf( "curse.maven:baubles-227083:2518667" )
     compileOnly fg.deobf( "curse.maven:Patchouli-306770:3162874" )
     compileOnly fg.deobf( "curse.maven:bewitchment-285439:3256343" )
+    compileOnly fg.deobf( "curse.maven:compact-machines-224218:2707509")
 
     compileOnly fg.deobf( "curse.maven:CubicChunks-292243:3546640" )
     compileOnly fg.deobf( "curse.maven:RTGU-648514:4396319" )

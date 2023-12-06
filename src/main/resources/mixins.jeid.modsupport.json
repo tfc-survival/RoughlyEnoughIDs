@@ -17,6 +17,7 @@
     "biometweaker.MixinBiomeHelper",
     "biometweaker.MixinCommandSetBiome",
     "bookshelf.MixinWorldUtils",
+    "compactmachines.MixinChunkUtils",
     "creepingnether.MixinCorruptorAbstract",
     "cubicchunks.MixinCube",
     "cubicchunks.MixinCubePrimer",
