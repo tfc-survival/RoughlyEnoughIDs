@@ -28,7 +28,7 @@ import java.util.Random;
      updateJSON = "https://gist.githubusercontent.com/Runemoro/67b1d8d31af58e9d35410ef60b2017c3/raw/1fe08a6c45a1f481a8a2a8c71e52d4245dcb7713/jeid_update.json")
 public class JEID {
     private static final boolean DEBUG_BLOCK_IDS = false;
-    private static final boolean DEBUG_ITEM_IDS = true;
+    private static final boolean DEBUG_ITEM_IDS = false;
     private static final boolean DEBUG_BIOME_IDS = false;
     private static final boolean DEBUG_POTION_IDS = false;
     private static final boolean DEBUG_ENCHANT_IDS = false;
