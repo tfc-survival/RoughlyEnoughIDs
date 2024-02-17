@@ -1,220 +1,238 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.gradle.ext.Gradle
 
-buildscript {
-    repositories {
-        maven { url 'https://maven.minecraftforge.net' }
-        maven { url "https://plugins.gradle.org/m2/" }
-        maven { url "https://repo.spongepowered.org/repository/maven-public" }
-        mavenCentral()
-    }
-    dependencies {
-        classpath "gradle.plugin.com.github.johnrengelman:shadow:7.1.1"
-        classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.+'
-        classpath "org.spongepowered:mixingradle:0.7-SNAPSHOT"
-    }
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.7'
+    id 'eclipse'
+    id 'com.gtnewhorizons.retrofuturagradle' version '1.3.27'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-apply plugin: "com.github.johnrengelman.shadow"
-apply plugin: 'org.spongepowered.mixin'
+version = project.mod_version
+group = project.maven_group
+archivesBaseName = 'RoughlyEnoughIDs'
 
-def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
-def versionSuffix = travisBuildNumber != null ? travisBuildNumber : "SNAPSHOT"
-
-version "2.0.7"
-group "org.dimdev.jeid"
-archivesBaseName = "RoughlyEnoughIDs"
-
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
-
-minecraft {
-    // The mappings can be changed at any time, and must be in the following format.
-    // snapshot_YYYYMMDD   Snapshot are built nightly.
-    // stable_#            Stables are built at the discretion of the MCP team.
-    // Use non-default mappings at your own risk. they may not always work.
-    // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'stable', version: '39-1.12'
-
-    accessTransformer = file('src/main/resources/META-INF/jeid_at.cfg')
-
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
-    runs {
-        client {
-
-            jvmArg "-Dfml.coreMods.load=org.dimdev.jeid.JEIDLoadingPlugin"
-            jvmArg "-Dmixin.hotSwap=true"
-            jvmArg "-Dmixin.checks.interfaces=true"
-
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-        }
-
-        server {
-
-            jvmArg "-Dfml.coreMods.load=org.dimdev.jeid.JEIDLoadingPlugin"
-            jvmArg "-Dmixin.hotSwap=true"
-            jvmArg "-Dmixin.checks.interfaces=true"
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-        }
+// Set the toolchain version to decouple the Java we run Gradle with from the Java used to compile and run the mod
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+        // Azul covers the most platforms for Java 8 toolchains, crucially including MacOS arm64
+        vendor.set(org.gradle.jvm.toolchain.JvmVendorSpec.AZUL)
     }
+    // Generate sources and javadocs jars when building and publishing
+    withSourcesJar()
+    // withJavadocJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }
 
 configurations {
-    compileJar {
-        implementation.extendsFrom(compileJar)
+    embed
+    implementation.extendsFrom(embed)
+}
+
+minecraft {
+    mcVersion = '1.12.2'
+
+    // MCP Mappings
+    mcpMappingChannel = 'stable'
+    mcpMappingVersion = '39'
+    
+    // Set username here, the UUID will be looked up automatically
+    username = 'Developer'
+    
+    // Add any additional tweaker classes here
+    extraTweakClasses.add('org.spongepowered.asm.launch.MixinTweaker')
+    
+    // Add various JVM arguments here for runtime
+    def args = ["-ea:${project.group}"]
+    if (project.use_coremod.toBoolean()) {
+        args << '-Dfml.coreMods.load=' + coremod_plugin_class_name
     }
+    if (project.use_mixins.toBoolean()) {
+        args << '-Dmixin.hotSwap=true'
+        args << '-Dmixin.checks.interfaces=true'
+        args << '-Dmixin.debug.export=true'
+    }
+    extraRunJvmArguments.addAll(args)
+
+    // Include and use dependencies' Access Transformer files
+    useDependencyAccessTransformers = true
+    
+    // Add any properties you want to swap out for a dynamic value at build time here
+    // Any properties here will be added to a class at build time, the name can be configured below
+    // Example:
+    // injectedTags.put('VERSION', project.version)
+    // injectedTags.put('MOD_ID', project.archives_base_name)
+}
+
+// Generate a group.archives_base_name.Tags class
+tasks.injectTags.configure {
+    // Change Tags class' name here:
+    outputClassName.set("${project.group}.${project.archives_base_name}.Tags")
 }
 
 repositories {
-    maven { url "https://repo.spongepowered.org/maven" }
     maven {
-        url "https://cursemaven.com"
+        name 'CleanroomMC Maven'
+        url 'https://maven.cleanroommc.com'
+    }
+    maven {
+        name 'SpongePowered Maven'
+        url 'https://repo.spongepowered.org/maven'
+    }
+    maven {
+        name 'CurseMaven'
+        url 'https://cursemaven.com'
         content {
-            includeGroup "curse.maven"
-        }
-        metadataSources {
-            artifact()
+            includeGroup 'curse.maven'
         }
     }
+    mavenLocal() // Must be last for caching to work
 }
 
 dependencies {
-    // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
-    // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
-    // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
-
-    annotationProcessor("org.spongepowered:mixin:0.8.3:processor")
-    compileJar("org.spongepowered:mixin:0.8.3") {
-        exclude module: "asm-commons"
-        exclude module: "asm-tree"
-        exclude module: "launchwrapper"
-        exclude module: "guava"
-        exclude module: "log4j-core"
-        exclude module: "gson"
-        exclude module: "commons-io"
+    if (project.use_assetmover.toBoolean()) {
+        implementation 'com.cleanroommc:assetmover:2.5'
     }
-    compileOnly fg.deobf( "curse.maven:BiomesOPlenty-220318:2842510" )
-    compileOnly fg.deobf( "curse.maven:twilightforest-227639:3051450" )
-    compileOnly fg.deobf( "curse.maven:Thaumcraft-223628:2629023" )
-    compileOnly fg.deobf( "curse.maven:AbyssalCraft-53686:3425234" )
-    compileOnly fg.deobf( "curse.maven:Creeping+Nether-268104:2655432" )
-    compileOnly fg.deobf( "curse.maven:GeographiCraft-76544:2497541" )
-    compileOnly fg.deobf( "curse.maven:mystcraft-224599:2958490" )
-    compileOnly fg.deobf( "curse.maven:HammerCore-247401:3366814" )
-    compileOnly fg.deobf( "curse.maven:AdvancedRocketry-236542:3015079" )
-    compileOnly fg.deobf( "curse.maven:LibVulpes-236541:3434864" )
-    compileOnly fg.deobf( "curse.maven:worldedit-225608:2941712" )
-    compileOnly fg.deobf( "curse.maven:journeymap-32274:2916002" )
-    compileOnly fg.deobf( "curse.maven:Bookshelf-228525:2836960" )
-    compileOnly fg.deobf( "curse.maven:CyclopsCore-232758:3159497" )
-    compileOnly fg.deobf( "curse.maven:extrautils2-225561:2678374" )
-    compileOnly fg.deobf( "curse.maven:TheBetweenlands-243363:3248202" )
-    compileOnly fg.deobf( "curse.maven:TofuCraftReload-317469:3115668" )
-    compileOnly fg.deobf( "curse.maven:tropicraft-254794:2713918" )
-    compileOnly fg.deobf( "curse.maven:gaiadimension-302529:2724738" )
-    compileOnly fg.deobf( "curse.maven:BiomeTweaker-228895:3112142" )
-    compileOnly fg.deobf( "curse.maven:baubles-227083:2518667" )
-    compileOnly fg.deobf( "curse.maven:Patchouli-306770:3162874" )
-    compileOnly fg.deobf( "curse.maven:bewitchment-285439:3256343" )
-    compileOnly fg.deobf( "curse.maven:compact-machines-224218:2707509")
+    if (project.use_mixins.toBoolean()) {
+        implementation 'zone.rong:mixinbooter:7.1'
+    }
 
-    compileOnly fg.deobf( "curse.maven:CubicChunks-292243:3546640" )
-    compileOnly fg.deobf( "curse.maven:RTGU-648514:4396319" )
+    // Example of deobfuscating a dependency
+    // implementation rfg.deobf('curse.maven:had-enough-items-557549:4543375')
+
+    if (project.use_mixins.toBoolean()) {
+        // Change your mixin refmap name here:
+        String mixin = modUtils.enableMixins('org.spongepowered:mixin:0.8.3', "mixins.${project.archives_base_name}.refmap.json")
+        api (mixin) {
+            transitive = false
+        }
+        annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
+        annotationProcessor 'com.google.guava:guava:24.1.1-jre'
+        annotationProcessor 'com.google.code.gson:gson:2.8.6'
+        annotationProcessor (mixin) {
+            transitive = false
+        }
+    }
+    
+    compileOnly rfg.deobf( "curse.maven:BiomesOPlenty-220318:2842510" )
+    compileOnly rfg.deobf( "curse.maven:twilightforest-227639:3051450" )
+    compileOnly rfg.deobf( "curse.maven:Thaumcraft-223628:2629023" )
+    compileOnly rfg.deobf( "curse.maven:AbyssalCraft-53686:3425234" )
+    compileOnly rfg.deobf( "curse.maven:Creeping+Nether-268104:2655432" )
+    compileOnly rfg.deobf( "curse.maven:GeographiCraft-76544:2497541" )
+    compileOnly rfg.deobf( "curse.maven:mystcraft-224599:2958490" )
+    compileOnly rfg.deobf( "curse.maven:HammerCore-247401:3366814" )
+    compileOnly rfg.deobf( "curse.maven:AdvancedRocketry-236542:3015079" )
+    compileOnly rfg.deobf( "curse.maven:LibVulpes-236541:3434864" )
+    compileOnly rfg.deobf( "curse.maven:worldedit-225608:2941712" )
+    compileOnly rfg.deobf( "curse.maven:journeymap-32274:2916002" )
+    compileOnly rfg.deobf( "curse.maven:Bookshelf-228525:2836960" )
+    compileOnly rfg.deobf( "curse.maven:CyclopsCore-232758:3159497" )
+    compileOnly rfg.deobf( "curse.maven:extrautils2-225561:2678374" )
+    compileOnly rfg.deobf( "curse.maven:TheBetweenlands-243363:3248202" )
+    compileOnly rfg.deobf( "curse.maven:TofuCraftReload-317469:3115668" )
+    compileOnly rfg.deobf( "curse.maven:tropicraft-254794:2713918" )
+    compileOnly rfg.deobf( "curse.maven:gaiadimension-302529:2724738" )
+    compileOnly rfg.deobf( "curse.maven:BiomeTweaker-228895:3112142" )
+    compileOnly rfg.deobf( "curse.maven:baubles-227083:2518667" )
+    compileOnly rfg.deobf( "curse.maven:Patchouli-306770:3162874" )
+    compileOnly rfg.deobf( "curse.maven:bewitchment-285439:3256343" )
+    compileOnly rfg.deobf( "curse.maven:compact-machines-224218:2707509")
+
+    compileOnly rfg.deobf( "curse.maven:CubicChunks-292243:3546640" )
+    compileOnly rfg.deobf( "curse.maven:RTGU-648514:4396319" )
+
 }
 
-// Example for how to get properties into the manifest for reading by the runtime..
-jar {
-    manifest {
-        attributes([
-                "FMLCorePluginContainsFMLMod": "true",
-                "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-                "FMLCorePlugin": "org.dimdev.jeid.JEIDLoadingPlugin",
-                "ForceLoadAsMod": "true",
-                "FMLAT": "jeid_at.cfg"
-        ])
+// Adds Access Transformer files to tasks
+if (project.use_access_transformer.toBoolean()) {
+    for (File at : sourceSets.getByName("main").resources.files) {
+        if (at.name.toLowerCase().endsWith("_at.cfg")) {
+            tasks.deobfuscateMergedJarToSrg.accessTransformerFiles.from(at)
+            tasks.srgifyBinpatchedJar.accessTransformerFiles.from(at)
+        }
     }
-}
-
-// Example configuration to allow publishing using the maven-publish task
-// This is the preferred method to reobfuscate your jar file
-jar.finalizedBy('reobfJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-//publish.dependsOn('reobfJar')
-
-java {
-    withSourcesJar()
 }
 
 processResources {
-    duplicatesStrategy(DuplicatesStrategy.INCLUDE)
-    from (sourceSets.main.resources.srcDirs) {
-        include("mcmod.info")
-        expand("version": version)
+    // This will ensure that this task is redone when the versions change
+    inputs.property 'version', project.version
+    inputs.property 'mcversion', project.minecraft.version
+    
+    // Replace various properties in mcmod.info and pack.mcmeta if applicable
+    filesMatching(['mcmod.info', 'pack.mcmeta']) { fcd ->
+        // Replace version and mcversion
+        fcd.expand (
+                'version': project.version,
+                'mcversion': project.minecraft.version
+        )
+    }
+    
+    if (project.use_access_transformer.toBoolean()) {
+        rename '(.+_at.cfg)', 'META-INF/$1' // Make sure Access Transformer files are in META-INF folder
     }
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-        }
-    }
-    repositories {
-        maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
-        }
-
-    }
-}
-
-mixin {
-    add sourceSets.main, "mixins.jeid.refmap.json"
-    disableAnnotationProcessorCheck()
-}
-
-shadowJar {
-    archiveClassifier.set(null)
-    configurations = [project.configurations.compileJar]
-}
-
-task thinShadowJar(type: ShadowJar) {
-    archiveClassifier.set("thin")
-    configurations = [project.configurations.compileJar]
-    relocators = shadowJar.relocators
-
-    dependencies {
-        exclude(dependency("org.spongepowered:mixin"))
-    }
-
+jar {
     manifest {
-        inheritFrom jar.manifest
+        def attribute_map = [:]
+        if(project.use_mixins.toBoolean()) {
+            attribute_map['TweakClass'] = "org.spongepowered.asm.launch.MixinTweaker"
+        }
+        if (project.use_coremod.toBoolean()) {
+            attribute_map['FMLCorePlugin'] = project.coremod_plugin_class_name
+            if (project.include_mod.toBoolean()) {
+                attribute_map['FMLCorePluginContainsFMLMod'] = true
+                attribute_map['ForceLoadAsMod'] = project.gradle.startParameter.taskNames[0] == "build"
+            }
+        }
+        if (project.use_access_transformer.toBoolean()) {
+            attribute_map['FMLAT'] = 'jeid_at.cfg'
+        }
+        attributes(attribute_map)
     }
-
-    from sourceSets.main.output
+    // Add all embedded dependencies into the jar
+    from(provider{ configurations.embed.collect {it.isDirectory() ? it : zipTree(it)} })
 }
 
-artifacts {
-    archives shadowJar
-    archives sourcesJar
-    archives thinShadowJar
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+    project {
+        settings {
+            runConfigurations {
+                "1. Run Client"(Gradle) {
+                    taskNames = ["runClient"]
+                }
+                "2. Run Server"(Gradle) {
+                    taskNames = ["runServer"]
+                }
+                "3. Run Obfuscated Client"(Gradle) {
+                    taskNames = ["runObfClient"]
+                }
+                "4. Run Obfuscated Server"(Gradle) {
+                    taskNames = ["runObfServer"]
+                }
+            }
+            compiler.javac {
+                afterEvaluate {
+                    javacAdditionalOptions = "-encoding utf8"
+                    moduleJavacAdditionalOptions = [
+                            (project.name + ".main"): tasks.compileJava.options.compilerArgs.collect { '"' + it + '"' }.join(' ')
+                    ]
+                }
+            }
+        }
+    }
 }
 
-reobf {
-    shadowJar {}
-    thinShadowJar {}
+tasks.named("processIdeaSettings").configure {
+    dependsOn("injectTags")
 }

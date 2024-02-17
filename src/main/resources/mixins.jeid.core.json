@@ -16,6 +16,8 @@
     "MixinGameData",
     "MixinGenLayerVoronoiZoom",
     "MixinItemEnchantedBook",
+    "MixinPacketBuffer",
+    "MixinPacketUtil",
     "MixinSPacketChunkData",
     "MixinStatList",
     "MixinWorldInfo"
