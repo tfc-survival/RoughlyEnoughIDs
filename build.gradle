@@ -145,7 +145,7 @@ dependencies {
     compileOnly rfg.deobf( "curse.maven:bewitchment-285439:3256343" )
     compileOnly rfg.deobf( "curse.maven:compact-machines-224218:2707509")
 
-    compileOnly rfg.deobf( "curse.maven:CubicChunks-292243:3546640" )
+    compileOnly rfg.deobf( "curse.maven:CubicChunks-292243:5135427" )
     compileOnly rfg.deobf( "curse.maven:RTGU-648514:4396319" )
 
 }

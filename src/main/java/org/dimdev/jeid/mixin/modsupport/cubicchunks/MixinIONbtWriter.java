@@ -24,8 +24,7 @@ public class MixinIONbtWriter {
 
     @Overwrite
     private static void writeBiomes(Cube cube, NBTTagCompound nbt) {// cube biomes
-        INewCube newCube = (INewCube) cube;
-        int[] biomes = newCube.getIntBiomeArray();
+        int[] biomes = ((INewCube) cube).getBiomeArray();
         if (biomes != null)
             nbt.setIntArray("Biomes", biomes);
     }
@@ -56,7 +55,6 @@ public class MixinIONbtWriter {
         }
 
         section.setByteArray("BlockLight", ebs.getBlockLight().getData());
-
         if (cube.getWorld().provider.hasSkyLight()) {
             section.setByteArray("SkyLight", ebs.getSkyLight().getData());
         }

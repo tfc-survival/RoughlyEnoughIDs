@@ -1,7 +1,11 @@
 package org.dimdev.jeid.mixin.modsupport.cubicchunks;
 
 import io.github.opencubicchunks.cubicchunks.api.util.Coords;
+import io.github.opencubicchunks.cubicchunks.core.asm.mixin.ICubicWorldInternal;
+import io.github.opencubicchunks.cubicchunks.core.lighting.ILightingManager;
+import io.github.opencubicchunks.cubicchunks.core.util.AddressTools;
 import io.github.opencubicchunks.cubicchunks.core.world.ClientHeightMap;
+import io.github.opencubicchunks.cubicchunks.core.world.IColumnInternal;
 import io.github.opencubicchunks.cubicchunks.core.world.cube.Cube;
 import io.github.opencubicchunks.cubicchunks.core.world.ServerHeightMap;
 import net.minecraft.network.PacketBuffer;
@@ -22,28 +26,6 @@ import java.util.Objects;
 @Pseudo
 @Mixin(targets = "io.github.opencubicchunks.cubicchunks.core.network.WorldEncoder")
 public class MixinWorldEncoder {
-    
-    @Overwrite
-    static void encodeColumn(PacketBuffer out, Chunk column) {
-        // 1. biomes
-        INewChunk newColumn = (INewChunk)column;
-        int[] biomes = newColumn.getIntBiomeArray();
-        //Utils.LOGGER.info("current biome: {}", biomes[128]);
-        for (int i = 0; i < 256; i++)
-            out.writeInt(biomes[i]);
-    }
-
-    @Overwrite
-    static void decodeColumn(PacketBuffer in, Chunk column) {
-        // 1. biomes
-        int[] biomes = new int[256];
-        for (int i = 0; i < 256; i++)
-        {
-            biomes[i] = in.readInt();
-        }
-        ((INewChunk)column).setIntBiomeArray(biomes);
-    }
-
     @Overwrite
     static void encodeCubes(PacketBuffer out, Collection<Cube> cubes) {
         // write first all the flags, then all the block data, then all the light data etc for better compression
@@ -55,7 +37,7 @@ public class MixinWorldEncoder {
                 flags |= 1;
             if(cube.getStorage() != null)
                 flags |= 2;
-            if(((INewCube)cube).getIntBiomeArray() != null)
+            if(((INewCube) cube).getBiomeArray() != null)
                 flags |= 4;
             out.writeByte(flags);
         });
@@ -88,20 +70,43 @@ public class MixinWorldEncoder {
         // it wil all cubes
         cubes.forEach(cube -> {
             if (!cube.isEmpty()) {
-                byte[] heightmaps = ((ServerHeightMap) cube.getColumn().getOpacityIndex()).getDataForClient();
-                assert heightmaps.length == Cube.SIZE * Cube.SIZE * Integer.BYTES;
-                out.writeBytes(heightmaps);
+                ((IColumnInternal) cube.getColumn()).writeHeightmapDataForClient(out);
             }
         });
         
         // 6. biomes
         cubes.forEach(cube -> {
-            INewCube newCube = (INewCube) cube;
-            int[] biomes = newCube.getIntBiomeArray();
+            int[] biomes = ((INewCube) cube).getBiomeArray();
             if (biomes != null)
                 for (int biome : biomes)
                     out.writeInt(biome);
         });
+    }
+
+    @Overwrite
+    static void encodeColumn(PacketBuffer out, Chunk column) {
+        // 1. biomes
+        int[] biomes = ((INewChunk) column).getIntBiomeArray();
+        //Utils.LOGGER.info("current biome: {}", biomes[128]);
+        for (int i = 0; i < 256; i++)
+            out.writeInt(biomes[i]);
+
+        ((IColumnInternal) column).writeHeightmapDataForClient(out);
+    }
+
+    @Overwrite
+    static void decodeColumn(PacketBuffer in, Chunk column) {
+        // 1. biomes
+        int[] biomes = new int[256];
+        for (int i = 0; i < 256; i++)
+        {
+            biomes[i] = in.readInt();
+        }
+        ((INewChunk)column).setIntBiomeArray(biomes);
+
+        if (in.readableBytes() > 0) {
+            ((IColumnInternal) column).loadClientHeightmapData(in);
+        }
     }
 
     @Overwrite
@@ -125,7 +130,7 @@ public class MixinWorldEncoder {
                 Cube cube = cubes.get(i);
                 ExtendedBlockStorage storage = new ExtendedBlockStorage(Coords.cubeToMinBlock(cube.getY()),
                         cube.getWorld().provider.hasSkyLight());
-                cube.setStorage(storage);
+                cube.setStorageFromSave(storage);
             }
         }
 
@@ -155,15 +160,29 @@ public class MixinWorldEncoder {
             }
         }
 
+        int[] oldHeights = new int[Cube.SIZE * Cube.SIZE];
         // 5. heightmaps and after all that - update ref counts
         for (int i = 0; i < cubes.size(); i++) {
             if (!isEmpty[i]) {
                 Cube cube = cubes.get(i);
-                byte[] heightmaps = new byte[Cube.SIZE * Cube.SIZE * Integer.BYTES];
-                in.readBytes(heightmaps);
-                ClientHeightMap coi = ((ClientHeightMap) cube.getColumn().getOpacityIndex());
-                coi.setData(heightmaps);
-
+                ILightingManager lm = ((ICubicWorldInternal) cube.getWorld()).getLightingManager();
+                IColumnInternal column = cube.getColumn();
+                ClientHeightMap coi = (ClientHeightMap) column.getOpacityIndex();
+                for (int dx = 0; dx < Cube.SIZE; dx++) {
+                    for (int dz = 0; dz < Cube.SIZE; dz++) {
+                        oldHeights[AddressTools.getLocalAddress(dx, dz)] = coi.getTopBlockY(dx, dz);
+                    }
+                }
+                column.loadClientHeightmapData(in);
+                for (int dx = 0; dx < Cube.SIZE; dx++) {
+                    for (int dz = 0; dz < Cube.SIZE; dz++) {
+                        int oldY = oldHeights[AddressTools.getLocalAddress(dx, dz)];
+                        int newY = coi.getTopBlockY(dx, dz);
+                        if (oldY != newY) {
+                            lm.updateLightBetween(cube.getColumn(), dx, oldY, newY, dz);
+                        }
+                    }
+                }
                 //noinspection ConstantConditions
                 cube.getStorage().recalculateRefCounts();
             }
@@ -174,16 +193,16 @@ public class MixinWorldEncoder {
             if (!hasCustomBiomeMap[i])
                 continue;
             Cube cube = cubes.get(i);
-            int[] blockBiomeArray = new int[64];
+            int[] blockBiomeArray = new int[Coords.BIOMES_PER_CUBE];
             for (int j = 0; j < 64; j++) 
                 blockBiomeArray[j] = in.readInt();
-            ((INewCube)cube).setIntBiomeArray(blockBiomeArray);
+            ((INewCube)cube).setBiomeArray(blockBiomeArray);
         }
     }
 
     @Overwrite
     static int getEncodedSize(Chunk column) {
-        return Integer.BYTES * 256; // 256 = ((INewChunk)column).getIntBiomeArray().length
+        return (((INewChunk) column).getIntBiomeArray().length * Integer.BYTES) + (Cube.SIZE * Cube.SIZE * Integer.BYTES);
     }
 
     @Overwrite
@@ -208,13 +227,13 @@ public class MixinWorldEncoder {
         }
 
         // heightmaps
-        size += 256 * Integer.BYTES * cubes.size();
+        size += Cube.SIZE * Cube.SIZE * Integer.BYTES * cubes.size();
         // biomes
         for (Cube cube : cubes) {
-            int[] biomeArray = ((INewCube)cube).getIntBiomeArray();
+            int[] biomeArray = ((INewCube)cube).getBiomeArray();
             if (biomeArray == null)
                 continue;
-            size += Integer.BYTES * 64; // 64 = biomeArray.length
+            size += Integer.BYTES * biomeArray.length;
         }
         return size;
     }
