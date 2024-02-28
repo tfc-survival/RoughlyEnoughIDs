@@ -1,92 +1,83 @@
 package org.dimdev.jeid.mixin.init;
 
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModClassLoader;
-import net.minecraftforge.fml.common.ModContainer;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.MixinEnvironment;
-import org.spongepowered.asm.mixin.Mixins;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.transformer.ext.Extensions;
+import zone.rong.mixinbooter.ILateMixinLoader;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 
-@Mixin(Loader.class)
-public class JEIDMixinLoader {
-    @Shadow
-    private List<ModContainer> mods;
-    @Shadow private ModClassLoader modClassLoader;
 
-    /**
-     * @reason Load all mods now and load mod support mixin configs. This can't be done later
-     * since constructing mods loads classes from them.
-     */
-    @Inject(method = "loadMods", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/common/LoadController;transition(Lnet/minecraftforge/fml/common/LoaderState;Z)V", ordinal = 1), remap = false)
-    private void beforeConstructingMods(List<String> nonMod, CallbackInfo ci) {
-        // Add all mods to class loader
-        for (ModContainer mod : mods) {
-            try {
-                modClassLoader.addFile(mod.getSource());
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
+public class JEIDMixinLoader implements ILateMixinLoader {
+    public List<String> getMixinConfigs() {
+        List<String> configs = new ArrayList<String>();
+
+        if (Loader.isModLoaded("abyssalcraft")) {
+            configs.add("mixins.jeid.abyssalcraft.json");
+        }
+        if (Loader.isModLoaded("advancedrocketry")) {
+            configs.add("mixins.jeid.advancedrocketry.json");
+        }
+        if (Loader.isModLoaded("bewitchment")) {
+            configs.add("mixins.jeid.bewitchment.json");
+        }
+        if (Loader.isModLoaded("biomesoplenty")) {
+            configs.add("mixins.jeid.biomesoplenty.json");
+        }
+        if (Loader.isModLoaded("biometweaker")) {
+            configs.add("mixins.jeid.biometweaker.json");
+        }
+        if (Loader.isModLoaded("bookeshelf")) {
+            configs.add("mixins.jeid.bookshelf.json");
+        }
+        if (Loader.isModLoaded("compactmachines")) {
+            configs.add("mixins.jeid.compactmachines.json");
+        }
+        if (Loader.isModLoaded("creepingnether")) {
+            configs.add("mixins.jeid.creepingnether.json");
+        }
+        if (Loader.isModLoaded("cubicchunks")) {
+            configs.add("mixins.jeid.cubicchunks.json");
+        }
+        if (Loader.isModLoaded("cyclopscore")) {
+            configs.add("mixins.jeid.cyclopscore.json");
+        }
+        if (Loader.isModLoaded("extrautils2")) {
+            configs.add("mixins.jeid.extrautils2.json");
+        }
+        if (Loader.isModLoaded("gaiadimension")) {
+            configs.add("mixins.jeid.gaiadimension.json");
+        }
+        if (Loader.isModLoaded("geographicraft")) {
+            configs.add("mixins.jeid.geographicraft.json");
+        }
+        if (Loader.isModLoaded("hammercore")) {
+            configs.add("mixins.jeid.hammercore.json");
+        }
+        if (Loader.isModLoaded("journeymap")) {
+            configs.add("mixins.jeid.journeymap.json");
+        }
+        if (Loader.isModLoaded("mystcraft")) {
+            configs.add("mixins.jeid.mystcraft.json");
+        }
+        if (Loader.isModLoaded("thaumcraft")) {
+            configs.add("mixins.jeid.thaumcraft.json");
+        }
+        if (Loader.isModLoaded("thebetweenlands")) {
+            configs.add("mixins.jeid.thebetweenlands.json");
+        }
+        if (Loader.isModLoaded("tofucraft")) {
+            configs.add("mixins.jeid.tofucraft.json");
+        }
+        if (Loader.isModLoaded("tropicraft")) {
+            configs.add("mixins.jeid.tropicraft.json");
+        }
+        if (Loader.isModLoaded("twilightforest")) {
+            configs.add("mixins.jeid.twilightforest.json");
+        }
+        if (Loader.isModLoaded("worldedit")) {
+            configs.add("mixins.jeid.worldedit.json");
         }
 
-        // Add and reload mixin configs
-        Mixins.addConfiguration("mixins.jeid.modsupport.json");
-        Mixins.addConfiguration("mixins.jeid.twilightforest.json");
-
-        try {
-            // This will very likely break on the next major mixin release.
-            Class<?> proxyClass = Class.forName("org.spongepowered.asm.mixin.transformer.Proxy");
-            Field transformerField = proxyClass.getDeclaredField("transformer");
-            transformerField.setAccessible(true);
-            Object transformer = transformerField.get(null);
-            
-            Class<?> mixinTransformerClass = Class.forName("org.spongepowered.asm.mixin.transformer.MixinTransformer");
-            Field processorField = mixinTransformerClass.getDeclaredField("processor");
-            processorField.setAccessible(true);
-            Object processor = processorField.get(transformer);
-            
-            Class<?> mixinProcessorClass = Class.forName("org.spongepowered.asm.mixin.transformer.MixinProcessor");
-            
-            Field extensionsField = mixinProcessorClass.getDeclaredField("extensions");
-            extensionsField.setAccessible(true);
-            Object extensions = extensionsField.get(processor);
-            
-            Method selectConfigsMethod = mixinProcessorClass.getDeclaredMethod("selectConfigs", MixinEnvironment.class);
-            selectConfigsMethod.setAccessible(true);
-            selectConfigsMethod.invoke(processor, MixinEnvironment.getCurrentEnvironment());
-            
-            // Mixin 0.8.4+
-            try {
-                Method prepareConfigs = mixinProcessorClass.getDeclaredMethod("prepareConfigs", MixinEnvironment.class, Extensions.class);
-                prepareConfigs.setAccessible(true);
-                prepareConfigs.invoke(processor, MixinEnvironment.getCurrentEnvironment(), extensions);
-                return;
-            } catch (NoSuchMethodException ex) {
-                // no-op
-            }
-            
-            // Mixin 0.8+
-            try {
-                Method prepareConfigs = mixinProcessorClass.getDeclaredMethod("prepareConfigs", MixinEnvironment.class);
-                prepareConfigs.setAccessible(true);
-                prepareConfigs.invoke(processor, MixinEnvironment.getCurrentEnvironment());
-                return;
-            } catch (NoSuchMethodException ex) {
-                // no-op
-            }
-            
-            throw new UnsupportedOperationException("Unsupported Mixin");
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+        return configs;
     }
 }
