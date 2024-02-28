@@ -2,6 +2,7 @@ package org.dimdev.jeid.mixin.modsupport.cubicchunks;
 
 import io.github.opencubicchunks.cubicchunks.api.util.Coords;
 import io.github.opencubicchunks.cubicchunks.core.server.chunkio.IONbtReader;
+import io.github.opencubicchunks.cubicchunks.core.util.AddressTools;
 import io.github.opencubicchunks.cubicchunks.core.world.cube.Cube;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -12,28 +13,11 @@ import net.minecraft.world.World;
 import org.dimdev.jeid.INewBlockStateContainer;
 import org.dimdev.jeid.INewChunk;
 import org.dimdev.jeid.modsupport.cubicchunks.INewCube;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Pseudo;
+import org.spongepowered.asm.mixin.*;
 
 @Pseudo
 @Mixin(IONbtReader.class)
 public class MixinIONbtReader {
-
-    @Overwrite
-    private static void readBiomes(NBTTagCompound nbt, Chunk column) {// column biomes
-        System.arraycopy(nbt.getIntArray("Biomes"), 0, ((INewChunk)column).getIntBiomeArray(), 0, Cube.SIZE * Cube.SIZE);
-    }
-
-    @Overwrite
-    private static void readBiomes(Cube cube, NBTTagCompound nbt) {// cube biomes
-        if (nbt.hasKey("Biomes"))
-        {
-            INewCube newCube = (INewCube) cube;
-            newCube.setIntBiomeArray(nbt.getIntArray("Biomes"));
-        }
-    }
-
     @Overwrite
     private static void readBlocks(NBTTagCompound nbt, World world, Cube cube) {
         boolean isEmpty = !nbt.hasKey("Sections");// is this an empty cube?
@@ -54,7 +38,6 @@ public class MixinIONbtReader {
             ebs.getData().setDataFromNBT(abyte, data, add);
 
             ebs.setBlockLight(new NibbleArray(nbt.getByteArray("BlockLight")));
-
             if (world.provider.hasSkyLight()) {
                 ebs.setSkyLight(new NibbleArray(nbt.getByteArray("SkyLight")));
             }
@@ -64,4 +47,36 @@ public class MixinIONbtReader {
         }
     }
 
+    @Overwrite
+    private static void readBiomes(NBTTagCompound nbt, Chunk column) {// column biomes
+        System.arraycopy(nbt.getIntArray("Biomes"), 0, ((INewChunk)column).getIntBiomeArray(), 0, Cube.SIZE * Cube.SIZE);
+    }
+
+    @Overwrite
+    private static void readBiomes(Cube cube, NBTTagCompound nbt) {// cube biomes
+        if (nbt.hasKey("Biomes3D")) {
+            ((INewCube) cube).setBiomeArray(nbt.getIntArray("Biomes3D"));
+        }
+        if (nbt.hasKey("Biomes"))
+        {
+            ((INewCube) cube).setBiomeArray(convertFromOldCubeBiomes(nbt.getIntArray("Biomes")));
+        }
+    }
+
+    private static int[] convertFromOldCubeBiomes(int[] biomes) {
+        int[] newBiomes = new int[64];
+
+        for(int x = 0; x < 4; ++x) {
+            for(int y = 0; y < 4; ++y) {
+                for(int z = 0; z < 4; ++z) {
+                    newBiomes[AddressTools.getBiomeAddress3d(x, y, z)] = biomes[getOldBiomeAddress(x << 1 | y & 1, z << 1 | y >> 1 & 1)];
+                }
+            }
+        }
+
+        return newBiomes;
+    }
+
+    @Shadow
+    public static int getOldBiomeAddress(int biomeX, int biomeZ) { return biomeX << 3 | biomeZ; }
 }
