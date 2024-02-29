@@ -15,7 +15,7 @@
       "logoFile": "/assets/reid/logo.png",
       "parent": "",
       "screenshots": [],
-      "dependencies": []
+      "dependencies": ["mixinbooter"]
     }
   ]
 }

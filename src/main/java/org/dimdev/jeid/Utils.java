@@ -9,5 +9,5 @@ public class Utils {
      * it you nerds.
      * - Zombie
      */
-    public static Logger LOGGER = LogManager.getLogger("JustEnoughIDs");
+    public static Logger LOGGER = LogManager.getLogger(JEID.NAME);
 }

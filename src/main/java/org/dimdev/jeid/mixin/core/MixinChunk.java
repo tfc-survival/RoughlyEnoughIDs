@@ -8,6 +8,7 @@ import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.chunk.Chunk;
 import org.dimdev.jeid.INewChunk;
 import org.dimdev.jeid.JEID;
+import org.dimdev.jeid.biome.BiomeError;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -21,7 +22,7 @@ public class MixinChunk implements INewChunk {
 
     @Shadow @Final private World world;
 
-    private static final byte errorBiomeID = (byte) Biome.REGISTRY.getIDForObject(JEID.errorBiome);
+    private static final byte errorBiomeID = (byte) Biome.REGISTRY.getIDForObject(BiomeError.getInstance());
     private final int[] intBiomeArray = generateIntBiomeArray();
 
     private static int[] generateIntBiomeArray() {

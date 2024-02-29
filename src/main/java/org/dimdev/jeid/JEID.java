@@ -17,24 +17,31 @@ import net.minecraft.world.biome.BiomeVoid;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
+
+import org.dimdev.jeid.biome.BiomeError;
+import org.dimdev.jeid.jeid.Tags;
 import org.dimdev.jeid.network.MessageManager;
 
 import java.util.Random;
 
-@Mod(modid = "jeid",
-     name = "JustEnoughIDs",
-     updateJSON = "https://gist.githubusercontent.com/Runemoro/67b1d8d31af58e9d35410ef60b2017c3/raw/1fe08a6c45a1f481a8a2a8c71e52d4245dcb7713/jeid_update.json",
+@Mod(modid = JEID.MODID,
+     name = JEID.NAME,
+     version = JEID.VERSION,
      dependencies = "required:mixinbooter@[7.1,)")
 public class JEID {
+    public static final String MODID = Tags.MOD_ID;
+    public static final String NAME = Tags.MOD_NAME;
+    public static final String VERSION = Tags.VERSION;
     private static final boolean DEBUG_BLOCK_IDS = false;
     private static final boolean DEBUG_ITEM_IDS = false;
     private static final boolean DEBUG_BIOME_IDS = false;
     private static final boolean DEBUG_POTION_IDS = false;
     private static final boolean DEBUG_ENCHANT_IDS = false;
-    public static final Biome errorBiome = new BiomeVoid(new Biome.BiomeProperties("A mod doesn't support extended biome IDs -- report to JEID"))
-            .setRegistryName("jeid:error_biome");
+//    public static final Biome errorBiome = new BiomeVoid(new Biome.BiomeProperties("A mod doesn't support extended biome IDs -- report to JEID"))
+//            .setRegistryName("jeid:error_biome");
 
 
     @Mod.EventHandler
@@ -43,7 +50,7 @@ public class JEID {
         MessageManager.init();
 
         // Error Biome Registration
-        GameRegistry.findRegistry(Biome.class).register(errorBiome);
+        ForgeRegistries.BIOMES.register(BiomeError.getInstance());
 
         // Debug code
         if (DEBUG_BLOCK_IDS) {

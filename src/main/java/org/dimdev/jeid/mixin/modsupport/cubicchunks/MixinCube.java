@@ -11,6 +11,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 import org.dimdev.jeid.JEID;
+import org.dimdev.jeid.biome.BiomeError;
 import org.dimdev.jeid.modsupport.cubicchunks.INewCube;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -29,7 +30,7 @@ public abstract class MixinCube {
     public abstract <T extends Chunk & IColumn> T getColumn();
 
 
-    private static final byte errorBiomeID = (byte) Biome.REGISTRY.getIDForObject(JEID.errorBiome);
+    private static final byte errorBiomeID = (byte) Biome.REGISTRY.getIDForObject(BiomeError.getInstance());
     @Nullable private int[] blockBiomeArray;
 
     @Overwrite(remap = false)
