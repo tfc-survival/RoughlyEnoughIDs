@@ -20,6 +20,8 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dimdev.jeid.biome.BiomeError;
 import org.dimdev.jeid.core.JEIDTransformer;
 import org.dimdev.jeid.jeid.Tags;
@@ -35,14 +37,12 @@ public class JEID {
     public static final String MODID = Tags.MOD_ID;
     public static final String NAME = Tags.MOD_NAME;
     public static final String VERSION = Tags.VERSION;
+    public static final Logger LOGGER = LogManager.getLogger(JEID.NAME);
     private static final boolean DEBUG_BLOCK_IDS = false;
     private static final boolean DEBUG_ITEM_IDS = false;
     private static final boolean DEBUG_BIOME_IDS = false;
     private static final boolean DEBUG_POTION_IDS = false;
     private static final boolean DEBUG_ENCHANT_IDS = false;
-//    public static final Biome errorBiome = new BiomeVoid(new Biome.BiomeProperties("A mod doesn't support extended biome IDs -- report to JEID"))
-//            .setRegistryName("jeid:error_biome");
-
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {

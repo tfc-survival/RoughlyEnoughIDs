@@ -13,7 +13,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.dimdev.jeid.INewChunk;
-import org.dimdev.jeid.Utils;
+import org.dimdev.jeid.JEID;
 import org.dimdev.jeid.network.BiomeArrayMessage;
 import org.dimdev.jeid.network.BiomeChangeMessage;
 import org.dimdev.jeid.network.MessageManager;
@@ -29,7 +29,7 @@ import java.util.Arrays;
 public class MixinCommandSetBiome {
     @Inject(method = "func_184881_a", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;func_76605_m()[B", remap = false), locals = LocalCapture.CAPTURE_FAILHARD, remap = false)
     private void setBiomeArrayElement(MinecraftServer server, ICommandSender sender, String args[], CallbackInfo ci, BlockPos coord, World world, Biome gen, Integer i, int id, boolean blocks, int count, int x, int z, int realX, int realZ, Chunk chunk) {
-        Utils.LOGGER.info("setting biome at {}, {}", x, z);
+        JEID.LOGGER.info("setting biome at {}, {}", x, z);
         ((INewChunk) chunk).getIntBiomeArray()[(z & 0xF) << 4 | x & 0xF] = id;
         MessageManager.CHANNEL.sendToAllTracking(new BiomeChangeMessage(x, z, id), new NetworkRegistry.TargetPoint(world.provider.getDimension(), coord.getX(), coord.getY(), coord.getZ(), 256));
     }
