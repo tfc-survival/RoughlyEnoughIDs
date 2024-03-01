@@ -1,4 +1,4 @@
-package org.dimdev.jeid.mixin.init;
+package org.dimdev.jeid.core;
 
 import net.minecraftforge.fml.common.Loader;
 import zone.rong.mixinbooter.ILateMixinLoader;

@@ -1,12 +1,13 @@
-package org.dimdev.jeid;
+package org.dimdev.jeid.core;
 
 import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.RegistryNamespaced;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
+import org.dimdev.jeid.ASMException;
+import org.dimdev.jeid.core.Obf;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -24,7 +25,6 @@ import java.util.function.Predicate;
  * https://github.com/zabi94/MaxPotionIDExtender
  */
 public class JEIDTransformer implements IClassTransformer {
-
     public static RegistryNamespaced<ResourceLocation, Potion> REGISTRY;
 
     @Override
@@ -276,51 +276,7 @@ public class JEIDTransformer implements IClassTransformer {
         return cw.toByteArray();
     }
 
+    @SuppressWarnings("unused")
     public static int getIdFromPotEffect(PotionEffect pe) { return REGISTRY.getIDForObject(pe.getPotion()); }
 }
 
-class Obf {
-
-
-    public static boolean isPotionClass(String s) {
-        if (s.endsWith(";")) {
-            s = s.substring(1, s.length()-1);
-        }
-        return s.equals(Type.getInternalName(Potion.class)) || s.equals("uz");
-    }
-
-    public static boolean isDeobf() {
-        return (boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
-    }
-
-    public static void loadData() {
-        if ((boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment")) {
-            NBTTagCompound = "net/minecraft/nbt/NBTTagCompound";
-            PotionEffect ="net/minecraft/potion/PotionEffect";
-            SPacketEntityEffect = "net/minecraft/network/play/server/SPacketEntityEffect";
-            PacketBuffer = "net/minecraft/network/PacketBuffer";
-            ItemStack = "net/minecraft/item/ItemStack";
-            ITooltipFlag = "net/minecraft/client/util/ITooltipFlag";
-            Enchantment = "net/minecraft/enchantment/Enchantment";
-            EntityPlayer = "net/minecraft/entity/player/EntityPlayer";
-        } else {
-            NBTTagCompound = "fy";
-            PotionEffect = "va";
-            SPacketEntityEffect = "kw";
-            PacketBuffer = "gy";
-            ItemStack = "aip";
-            ITooltipFlag = "akb";
-            Enchantment = "alk";
-            EntityPlayer = "aed";
-        }
-    }
-
-    public static String NBTTagCompound;
-    public static String PotionEffect;
-    public static String SPacketEntityEffect;
-    public static String PacketBuffer;
-    public static String ItemStack;
-    public static String ITooltipFlag;
-    public static String Enchantment;
-    public static String EntityPlayer;
-}

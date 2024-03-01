@@ -13,7 +13,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeVoid;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -22,6 +21,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import org.dimdev.jeid.biome.BiomeError;
+import org.dimdev.jeid.core.JEIDTransformer;
 import org.dimdev.jeid.jeid.Tags;
 import org.dimdev.jeid.network.MessageManager;
 
