@@ -50,9 +50,6 @@ minecraft {
     
     // Add various JVM arguments here for runtime
     def args = ["-ea:${project.group}"]
-    if (project.use_coremod.toBoolean()) {
-        args << '-Dfml.coreMods.load=' + coremod_plugin_class_name
-    }
     if (project.use_mixins.toBoolean()) {
         args << '-Dmixin.hotSwap=true'
         args << '-Dmixin.checks.interfaces=true'
@@ -68,6 +65,15 @@ minecraft {
     injectedTags.put('MOD_ID', project.archives_base_name)
     injectedTags.put('MOD_NAME', project.mod_name)
     injectedTags.put('VERSION', project.version)
+}
+
+// Don't add coremod arg to runDeobf tasks
+if (project.use_coremod.toBoolean()) {
+    for (runTask in ['runClient', 'runServer']) {
+        tasks.named(runTask).configure {
+            extraJvmArgs.add('-Dfml.coreMods.load=' + coremod_plugin_class_name)
+        }
+    }
 }
 
 // Generate a group.archives_base_name.Tags class
@@ -100,7 +106,7 @@ dependencies {
         implementation 'com.cleanroommc:assetmover:2.5'
     }
     if (project.use_mixins.toBoolean()) {
-        implementation 'zone.rong:mixinbooter:7.1'
+        implementation 'zone.rong:mixinbooter:8.0'
     }
 
     // Example of deobfuscating a dependency

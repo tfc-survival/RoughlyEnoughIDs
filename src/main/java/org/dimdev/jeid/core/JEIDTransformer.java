@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 /**
- * Since 2.0.9: Cleaned up obfuscated code.
+ * Since 2.0.9: Cleaned up obfuscated code; converted most transforms to mixins.
  * <p>
  * This class was borrowed from Zabi94's MaxPotionIDExtender
  * under MIT License and with full help of Zabi. All credit in this class goes to Zabi
@@ -26,24 +26,16 @@ import java.util.function.Predicate;
  * <a href="https://github.com/zabi94/MaxPotionIDExtender">MaxPotionIDExtender by Zabi94</a>
  */
 public class JEIDTransformer implements IClassTransformer {
+    @Deprecated
     public static RegistryNamespaced<ResourceLocation, Potion> REGISTRY;
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (transformedName.equals("net.minecraft.client.network.NetHandlerPlayClient")) {
-            return transformNetHandlerPlayClient(basicClass);
+        if (transformedName.equals("net.minecraft.item.ItemStack")) {
+            return transformItemStack(basicClass);
         }
         if (transformedName.equals("net.minecraft.potion.PotionEffect")) {
             return transformPotionEffect(basicClass);
-        }
-        if (transformedName.equals("net.minecraft.network.play.server.SPacketEntityEffect")) {
-            return transformSPacketEntityEffect(basicClass);
-        }
-        if (transformedName.equals("net.minecraft.network.play.server.SPacketRemoveEntityEffect")) {
-            return transformSPacketRemoveEntityEffect(basicClass);
-        }
-        if (transformedName.equals("net.minecraft.item.ItemStack")) {
-            return transformItemStack(basicClass);
         }
         return basicClass;
     }
@@ -116,7 +108,11 @@ public class JEIDTransformer implements IClassTransformer {
         return cw.toByteArray();
     }
 
-    // TODO: Convert to mixin
+    /**
+     * This is no longer used as it has been converted into a mixin.
+     * @see org.dimdev.jeid.mixin.core.potion.MixinSPacketRemoveEntityEffect
+     */
+    @Deprecated
     private byte[] transformSPacketRemoveEntityEffect(byte[] basicClass) {
         ClassReader cr = new ClassReader(basicClass);
         ClassNode cn = new ClassNode();
@@ -141,7 +137,11 @@ public class JEIDTransformer implements IClassTransformer {
         return cw.toByteArray();
     }
 
-    // TODO: Convert to mixin
+    /**
+     * This is no longer used as it has been converted into a mixin.
+     * @see org.dimdev.jeid.mixin.core.potion.MixinSPacketEntityEffect
+     */
+    @Deprecated
     private byte[] transformSPacketEntityEffect(byte[] basicClass) {
         ClassReader cr = new ClassReader(basicClass);
         ClassNode cn = new ClassNode();
@@ -202,7 +202,8 @@ public class JEIDTransformer implements IClassTransformer {
         mnWritePacket.instructions.insertBefore(wpTarget, new MethodInsnNode(Opcodes.INVOKEVIRTUAL, packetBuffer, (JEIDLoadingPlugin.isDeobf ? "writeVarInt" : "func_150787_b"), "(I)L" + packetBuffer + ";", false));
         mnWritePacket.instructions.insertBefore(wpTarget, new InsnNode(Opcodes.POP));
 
-        ClassWriter cw = new ClassWriter(0);
+        // Max stack size has been modified
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         cn.accept(cw);
         return cw.toByteArray();
     }
@@ -237,7 +238,11 @@ public class JEIDTransformer implements IClassTransformer {
         return cw.toByteArray();
     }
 
-    // TODO: Convert to mixin (@ModifyArg)
+    /**
+     * This is no longer used as it has been converted into a mixin.
+     * @see org.dimdev.jeid.mixin.core.potion.client.MixinNetHandlerPlayClient
+     */
+    @Deprecated
     private byte[] transformNetHandlerPlayClient(byte[] basicClass) {
         ClassReader cr = new ClassReader(basicClass);
         ClassNode cn = new ClassNode();
@@ -258,7 +263,11 @@ public class JEIDTransformer implements IClassTransformer {
         return cw.toByteArray();
     }
 
-    @SuppressWarnings("unused")
+    /**
+     * No longer used.
+     * @see JEIDTransformer#transformSPacketRemoveEntityEffect(byte[])
+     */
+    @Deprecated
     public static int getIdFromPotEffect(PotionEffect pe) {
         return REGISTRY.getIDForObject(pe.getPotion());
     }

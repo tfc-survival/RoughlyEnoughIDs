@@ -20,12 +20,15 @@
     "MixinPacketUtil",
     "MixinSPacketChunkData",
     "MixinStatList",
-    "MixinWorldInfo"
+    "MixinWorldInfo",
+    "potion.MixinSPacketEntityEffect",
+    "potion.MixinSPacketRemoveEntityEffect"
   ],
   "client": [
     "client.MixinChunk",
     "client.MixinRenderGlobal",
-    "client.MixinWorldSummary"
+    "client.MixinWorldSummary",
+    "potion.client.MixinNetHandlerPlayClient"
   ],
   "injectors": {
     "maxShiftBy": 10
