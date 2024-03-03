@@ -3,7 +3,7 @@ package org.dimdev.jeid.mixin.modsupport.mystcraft;
 import com.xcompwiz.mystcraft.symbol.symbols.SymbolFloatingIslands;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import org.dimdev.jeid.INewChunk;
+import org.dimdev.jeid.ducks.INewChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Pseudo;

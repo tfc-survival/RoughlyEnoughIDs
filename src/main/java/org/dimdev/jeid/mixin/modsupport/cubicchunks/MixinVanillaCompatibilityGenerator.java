@@ -6,7 +6,7 @@ import io.github.opencubicchunks.cubicchunks.core.worldgen.generator.vanilla.Van
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import org.dimdev.jeid.INewChunk;
+import org.dimdev.jeid.ducks.INewChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;

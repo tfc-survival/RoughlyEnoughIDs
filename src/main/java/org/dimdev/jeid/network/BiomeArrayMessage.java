@@ -9,7 +9,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import org.dimdev.jeid.INewChunk;
+import org.dimdev.jeid.ducks.INewChunk;
 
 public class BiomeArrayMessage implements IMessage {
     private int chunkX;

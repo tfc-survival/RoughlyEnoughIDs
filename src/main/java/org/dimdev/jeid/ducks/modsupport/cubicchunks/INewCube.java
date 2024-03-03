@@ -1,4 +1,4 @@
-package org.dimdev.jeid.modsupport.cubicchunks;
+package org.dimdev.jeid.ducks.modsupport.cubicchunks;
 
 public interface INewCube {
     int[] getBiomeArray();

@@ -26,6 +26,7 @@
   ],
   "client": [
     "client.MixinChunk",
+    "client.MixinItemEnchantedBook",
     "client.MixinRenderGlobal",
     "client.MixinWorldSummary",
     "potion.client.MixinNetHandlerPlayClient"

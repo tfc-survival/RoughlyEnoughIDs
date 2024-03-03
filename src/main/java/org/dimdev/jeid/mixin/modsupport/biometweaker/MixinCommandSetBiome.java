@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import org.dimdev.jeid.INewChunk;
+import org.dimdev.jeid.ducks.INewChunk;
 import org.dimdev.jeid.JEID;
 import org.dimdev.jeid.network.BiomeArrayMessage;
 import org.dimdev.jeid.network.BiomeChangeMessage;

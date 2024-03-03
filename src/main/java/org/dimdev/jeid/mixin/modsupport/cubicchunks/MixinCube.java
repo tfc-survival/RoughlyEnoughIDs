@@ -10,12 +10,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
-import org.dimdev.jeid.JEID;
 import org.dimdev.jeid.biome.BiomeError;
-import org.dimdev.jeid.modsupport.cubicchunks.INewCube;
+import org.dimdev.jeid.ducks.modsupport.cubicchunks.INewCube;
 import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

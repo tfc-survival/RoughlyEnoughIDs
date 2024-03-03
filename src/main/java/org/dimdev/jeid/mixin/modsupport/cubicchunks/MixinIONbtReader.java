@@ -10,9 +10,9 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.NibbleArray;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.World;
-import org.dimdev.jeid.INewBlockStateContainer;
-import org.dimdev.jeid.INewChunk;
-import org.dimdev.jeid.modsupport.cubicchunks.INewCube;
+import org.dimdev.jeid.ducks.INewBlockStateContainer;
+import org.dimdev.jeid.ducks.INewChunk;
+import org.dimdev.jeid.ducks.modsupport.cubicchunks.INewCube;
 import org.spongepowered.asm.mixin.*;
 
 @Pseudo

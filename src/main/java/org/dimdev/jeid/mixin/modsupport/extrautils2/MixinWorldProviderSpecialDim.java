@@ -3,7 +3,7 @@ package org.dimdev.jeid.mixin.modsupport.extrautils2;
 import com.rwtema.extrautils2.dimensions.workhousedim.WorldProviderSpecialDim;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
-import org.dimdev.jeid.INewChunk;
+import org.dimdev.jeid.ducks.INewChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
