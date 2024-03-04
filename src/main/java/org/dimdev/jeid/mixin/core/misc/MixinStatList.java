@@ -1,6 +1,5 @@
 package org.dimdev.jeid.mixin.core.misc;
 
-import com.llamalad7.mixinextras.injector.ModifyReceiver;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
@@ -10,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatCrafting;
 import net.minecraft.stats.StatList;
+import org.dimdev.jeid.JEID;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -36,12 +37,35 @@ import java.util.Map;
  **/
 @Mixin(value = StatList.class, priority = 500)
 public final class MixinStatList {
-    /**
-     * Temporary array to hold StatBase objects. These objects should always be set to null
-     * as they are added.
-     */
-    @Unique
-    private static final StatBase[] TEMP_STATS_HOLDER = new StatBase[32000];
+    @Final
+    @Shadow
+    public static List<StatBase> ALL_STATS;
+    @Final
+    @Shadow
+    public static List<StatBase> BASIC_STATS;
+    @Final
+    @Shadow
+    public static List<StatCrafting> MINE_BLOCK_STATS;
+    // All vanilla arrays are shrunk to size 1 to act as single stat holders,
+    // passing to their map equivalents.
+    @Final
+    @Shadow
+    private static StatBase[] BLOCKS_STATS;
+    @Final
+    @Shadow
+    private static StatBase[] OBJECT_USE_STATS;
+    @Final
+    @Shadow
+    private static StatBase[] CRAFTS_STATS;
+    @Final
+    @Shadow
+    private static StatBase[] OBJECT_BREAK_STATS;
+    @Final
+    @Shadow
+    private static StatBase[] OBJECTS_PICKED_UP_STATS;
+    @Final
+    @Shadow
+    private static StatBase[] OBJECTS_DROPPED_STATS;
     @Unique
     private static final Map<Block, StatBase> BLOCKS_STATS_MAP = new HashMap<>();
     @Unique
@@ -54,18 +78,9 @@ public final class MixinStatList {
     private static final Map<Item, StatBase> OBJECTS_PICKED_UP_STATS_MAP = new HashMap<>();
     @Unique
     private static final Map<Item, StatBase> OBJECTS_DROPPED_STATS_MAP = new HashMap<>();
-    @Final
-    @Shadow
-    public static List<StatBase> ALL_STATS;
-    @Final
-    @Shadow
-    public static List<StatBase> BASIC_STATS;
-    @Final
-    @Shadow
-    public static List<StatCrafting> MINE_BLOCK_STATS;
 
     /**
-     * @reason Reduce memory footprint of unused stat arrays
+     * @reason Reduce memory footprint of stat arrays
      */
     @ModifyConstant(method = "<clinit>", constant = @Constant(intValue = 4096))
     private static int reid$shrinkArray(int original) {
@@ -73,7 +88,7 @@ public final class MixinStatList {
     }
 
     /**
-     * @reason Reduce memory footprint of unused stat arrays
+     * @reason Reduce memory footprint of stat arrays
      */
     @ModifyConstant(method = "<clinit>",
             slice = @Slice(
@@ -183,32 +198,26 @@ public final class MixinStatList {
     // endregion
 
     // region MINING STATS
-
     /**
-     * @reason Disable default array read/write logic
+     * @reason Use default array as single stat holder
      */
-    @Redirect(method = "initMiningStats", at = @At(value = "FIELD", target = "Lnet/minecraft/stats/StatList;BLOCKS_STATS:[Lnet/minecraft/stats/StatBase;", opcode = Opcodes.GETSTATIC))
-    private static StatBase[] reid$defaultMiningStatArray() {
-        return TEMP_STATS_HOLDER;
+    @SuppressWarnings("all")
+    @ModifyVariable(method = "initMiningStats", at = @At(value = "STORE", ordinal = 0))
+    private static int reid$defaultMiningStatIndex(int index, @Local Block block) {
+        if (index != Block.getIdFromBlock(block)) {
+            throw new AssertionError(JEID.MODID + " :: Ordinal 0 of STORE int of StatList#initMiningStats isn't \"block id\"");
+        }
+        return 0;
     }
 
     /**
-     * @reason Get stat to add
-     */
-    @ModifyReceiver(method = "initMiningStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
-    private static StatCrafting reid$getMiningStat(StatCrafting instance, @Share("stat") LocalRef<StatCrafting> stat) {
-        stat.set(instance);
-        return instance;
-    }
-
-    /**
-     * @reason Add to MINE_BLOCK_STATS (vanilla) and BLOCKS_STATS_MAP without using array
+     * @reason Add to MINE_BLOCK_STATS (vanilla) and BLOCKS_STATS_MAP
      */
     @ModifyArg(method = "initMiningStats", at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", remap = false), index = 0)
-    private static Object reid$addMiningStat(Object original, @Local Block block, @Local int index, @Share("stat") LocalRef<StatCrafting> stat) {
-        TEMP_STATS_HOLDER[index] = null;
-        BLOCKS_STATS_MAP.put(block, stat.get());
-        return stat.get();
+    private static Object reid$addMiningStat(Object original, @Local Block key) {
+        BLOCKS_STATS_MAP.put(key, (StatCrafting) original);
+        BLOCKS_STATS[0] = null;
+        return BLOCKS_STATS_MAP.get(key);
     }
 
     @Redirect(method = "initMiningStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatList;replaceAllSimilarBlocks([Lnet/minecraft/stats/StatBase;Z)V", remap = false))
@@ -218,31 +227,26 @@ public final class MixinStatList {
     // endregion
 
     // region USE STATS
-
     /**
-     * @reason Disable default array read/write logic
+     * @reason Use default array as single stat holder
      */
-    @Redirect(method = "initStats", at = @At(value = "FIELD", target = "Lnet/minecraft/stats/StatList;OBJECT_USE_STATS:[Lnet/minecraft/stats/StatBase;", opcode = Opcodes.GETSTATIC))
-    private static StatBase[] reid$defaultUseStatArray() {
-        return TEMP_STATS_HOLDER;
+    @SuppressWarnings("all")
+    @ModifyVariable(method = "initStats", at = @At(value = "STORE", ordinal = 0))
+    private static int reid$defaultUseStatIndex(int index, @Local Item item) {
+        if (index != Item.getIdFromItem(item)) {
+            throw new AssertionError(JEID.MODID + " :: Ordinal 0 of STORE int of StatList#initStats isn't \"item id\"");
+        }
+        return 0;
     }
 
     /**
-     * @reason Get stat to add
+     * @reason Add to OBJECT_USE_STATS_MAP
      */
-    @ModifyReceiver(method = "initStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
-    private static StatCrafting reid$getUseStat(StatCrafting instance, @Share("stat") LocalRef<StatCrafting> stat) {
-        stat.set(instance);
-        return instance;
-    }
-
-    /**
-     * @reason Add to OBJECT_USE_STATS_MAP without using array
-     */
-    @Inject(method = "initStats", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
-    private static void reid$addUseStat(CallbackInfo ci, @Local Item item, @Local int index, @Share("stat") LocalRef<StatCrafting> stat) {
-        TEMP_STATS_HOLDER[index] = null;
-        OBJECT_USE_STATS_MAP.put(item, stat.get());
+    @Inject(method = "initStats", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", shift = At.Shift.AFTER))
+    private static void reid$addUseStat(CallbackInfo ci, @Local Item item, @Share("stat") LocalRef<StatCrafting> stat) {
+        OBJECT_USE_STATS_MAP.put(item, OBJECT_USE_STATS[0]);
+        stat.set((StatCrafting) OBJECT_USE_STATS[0]);
+        OBJECT_USE_STATS[0] = null;
     }
 
     /**
@@ -262,29 +266,24 @@ public final class MixinStatList {
     // region CRAFTABLE STATS
 
     /**
-     * @reason Disable default array write logic
+     * @reason Use default array as single stat holder
      */
-    @Redirect(method = "initCraftableStats", at = @At(value = "FIELD", target = "Lnet/minecraft/stats/StatList;CRAFTS_STATS:[Lnet/minecraft/stats/StatBase;", opcode = Opcodes.GETSTATIC, ordinal = 0))
-    private static StatBase[] reid$defaultCraftStatArray() {
-        return TEMP_STATS_HOLDER;
+    @SuppressWarnings("all")
+    @ModifyVariable(method = "initCraftableStats", at = @At(value = "STORE", ordinal = 0))
+    private static int reid$defaultCraftIndex(int index, @Local Item item) {
+        if (index != Item.getIdFromItem(item)) {
+            throw new AssertionError(JEID.MODID + " :: Ordinal 0 of STORE int of StatList#initCraftableStats isn't \"item id\"");
+        }
+        return 0;
     }
 
     /**
-     * @reason Get stat to add
+     * @reason Add to CRAFTS_STATS_MAP
      */
-    @ModifyReceiver(method = "initCraftableStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
-    private static StatCrafting reid$getCraftStat(StatCrafting instance, @Share("stat") LocalRef<StatCrafting> stat) {
-        stat.set(instance);
-        return instance;
-    }
-
-    /**
-     * @reason Add to CRAFTS_STATS_MAP without using array
-     */
-    @Inject(method = "initCraftableStats", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
-    private static void reid$addCraftStat(CallbackInfo ci, @Local Item item, @Local int index, @Share("stat") LocalRef<StatCrafting> stat) {
-        TEMP_STATS_HOLDER[index] = null;
-        CRAFTS_STATS_MAP.put(item, stat.get());
+    @Inject(method = "initCraftableStats", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", shift = At.Shift.AFTER))
+    private static void reid$addCraftStat(CallbackInfo ci, @Local Item item) {
+        CRAFTS_STATS_MAP.put(item, CRAFTS_STATS[0]);
+        CRAFTS_STATS[0] = null;
     }
 
     @Redirect(method = "initCraftableStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatList;replaceAllSimilarBlocks([Lnet/minecraft/stats/StatBase;Z)V", remap = false))
@@ -296,29 +295,24 @@ public final class MixinStatList {
     // region BREAK STATS
 
     /**
-     * @reason Disable default array write logic
+     * @reason Use default array as single stat holder
      */
-    @Redirect(method = "initItemDepleteStats", at = @At(value = "FIELD", target = "Lnet/minecraft/stats/StatList;OBJECT_BREAK_STATS:[Lnet/minecraft/stats/StatBase;", opcode = Opcodes.GETSTATIC, ordinal = 0))
-    private static StatBase[] reid$defaultBreakStatArray() {
-        return TEMP_STATS_HOLDER;
+    @SuppressWarnings("all")
+    @ModifyVariable(method = "initItemDepleteStats", at = @At(value = "STORE", ordinal = 0))
+    private static int reid$defaultBreakIndex(int index, @Local Item item) {
+        if (index != Item.getIdFromItem(item)) {
+            throw new AssertionError(JEID.MODID + " :: Ordinal 0 of STORE int of StatList#initItemDepleteStats isn't \"item id\"");
+        }
+        return 0;
     }
 
     /**
-     * @reason Get stat to add
+     * @reason Add to OBJECT_BREAK_STATS_MAP
      */
-    @ModifyReceiver(method = "initItemDepleteStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
-    private static StatCrafting reid$getBreakStat(StatCrafting instance, @Share("stat") LocalRef<StatCrafting> stat) {
-        stat.set(instance);
-        return instance;
-    }
-
-    /**
-     * @reason Add to OBJECT_BREAK_STATS_MAP without using array
-     */
-    @Inject(method = "initItemDepleteStats", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
-    private static void reid$addBreakStat(CallbackInfo ci, @Local Item item, @Local int index, @Share("stat") LocalRef<StatCrafting> stat) {
-        TEMP_STATS_HOLDER[index] = null;
-        OBJECT_BREAK_STATS_MAP.put(item, stat.get());
+    @Inject(method = "initItemDepleteStats", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", shift = At.Shift.AFTER))
+    private static void reid$addBreakStat(CallbackInfo ci, @Local Item item) {
+        OBJECT_BREAK_STATS_MAP.put(item, OBJECT_BREAK_STATS[0]);
+        OBJECT_BREAK_STATS[0] = null;
     }
 
     @Redirect(method = "initItemDepleteStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatList;replaceAllSimilarBlocks([Lnet/minecraft/stats/StatBase;Z)V", remap = false))
@@ -330,47 +324,26 @@ public final class MixinStatList {
     // region PICKED UP/DROPPED STATS
 
     /**
-     * @reason Disable default array write logic
+     * @reason Use default arrays as single stat holders
      */
-    @Redirect(method = "initPickedUpAndDroppedStats", at = @At(value = "FIELD", target = "Lnet/minecraft/stats/StatList;OBJECTS_PICKED_UP_STATS:[Lnet/minecraft/stats/StatBase;", opcode = Opcodes.GETSTATIC, ordinal = 0))
-    private static StatBase[] reid$defaultPickupStatArray() {
-        return TEMP_STATS_HOLDER;
-    }
-
-    /**
-     * @reason Disable default array write logic
-     */
-    @Redirect(method = "initPickedUpAndDroppedStats", at = @At(value = "FIELD", target = "Lnet/minecraft/stats/StatList;OBJECTS_DROPPED_STATS:[Lnet/minecraft/stats/StatBase;", opcode = Opcodes.GETSTATIC, ordinal = 0))
-    private static StatBase[] reid$defaultDropStatArray() {
-        return TEMP_STATS_HOLDER;
-    }
-
-    /**
-     * @reason Get stat to add
-     */
-    @ModifyReceiver(method = "initPickedUpAndDroppedStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", ordinal = 0))
-    private static StatCrafting reid$getPickupStat(StatCrafting instance, @Share("statPickup") LocalRef<StatCrafting> statPickup) {
-        statPickup.set(instance);
-        return instance;
-    }
-
-    /**
-     * @reason Get stat to add
-     */
-    @ModifyReceiver(method = "initPickedUpAndDroppedStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", ordinal = 1))
-    private static StatCrafting reid$getDropStat(StatCrafting instance, @Share("statDrop") LocalRef<StatCrafting> statDrop) {
-        statDrop.set(instance);
-        return instance;
+    @SuppressWarnings("all")
+    @ModifyVariable(method = "initPickedUpAndDroppedStats", at = @At(value = "STORE", ordinal = 0))
+    private static int reid$defaultDropIndex(int index, @Local Item item) {
+        if (index != Item.getIdFromItem(item)) {
+            throw new AssertionError(JEID.MODID + " :: Ordinal 0 of STORE int of StatList#initPickedUpAndDroppedStats isn't \"item id\"");
+        }
+        return 0;
     }
 
     /**
      * @reason Add to OBJECTS_PICKED_UP_STATS_MAP and OBJECTS_DROPPED_STATS_MAP without using array
      */
-    @Inject(method = "initPickedUpAndDroppedStats", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", ordinal = 1))
-    private static void reid$addPickupDropStat(CallbackInfo ci, @Local Item item, @Local int index, @Share("statPickup") LocalRef<StatCrafting> statPickup, @Share("statDrop") LocalRef<StatCrafting> statDrop) {
-        TEMP_STATS_HOLDER[index] = null;
-        OBJECTS_PICKED_UP_STATS_MAP.put(item, statPickup.get());
-        OBJECTS_DROPPED_STATS_MAP.put(item, statDrop.get());
+    @Inject(method = "initPickedUpAndDroppedStats", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", ordinal = 1, shift = At.Shift.AFTER))
+    private static void reid$addPickupDropStat(CallbackInfo ci, @Local Item item) {
+        OBJECTS_PICKED_UP_STATS_MAP.put(item, OBJECTS_PICKED_UP_STATS[0]);
+        OBJECTS_DROPPED_STATS_MAP.put(item, OBJECTS_DROPPED_STATS[0]);
+        OBJECTS_PICKED_UP_STATS[0] = null;
+        OBJECTS_DROPPED_STATS[0] = null;
     }
 
     @Redirect(method = "initPickedUpAndDroppedStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatList;replaceAllSimilarBlocks([Lnet/minecraft/stats/StatBase;Z)V", remap = false))
