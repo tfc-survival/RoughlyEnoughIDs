@@ -3,9 +3,7 @@ package org.dimdev.jeid.mixin.core;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BitArray;
 import net.minecraft.world.chunk.BlockStateContainer;
-import net.minecraft.world.chunk.IBlockStatePalette;
 import net.minecraft.world.chunk.NibbleArray;
 import org.dimdev.jeid.ducks.INewBlockStateContainer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,13 +19,16 @@ import java.util.Map;
 
 @Mixin(BlockStateContainer.class)
 public abstract class MixinBlockStateContainer implements INewBlockStateContainer {
-    @Shadow protected abstract IBlockState get(int index);
-    @Shadow protected abstract void set(int index, IBlockState state);
-
     @Unique
     private int[] temporaryPalette; // index -> state id
     @Unique
     private NibbleArray add2; // NEID format
+
+    @Shadow
+    protected abstract IBlockState get(int index);
+
+    @Shadow
+    protected abstract void set(int index, IBlockState state);
 
     @Override
     public int[] getTemporaryPalette() {

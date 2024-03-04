@@ -1,6 +1,5 @@
 package org.dimdev.jeid.mixin.core;
 
-import com.google.common.collect.Lists;
 import com.llamalad7.mixinextras.injector.ModifyReceiver;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
@@ -32,19 +31,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-/** Rewrite most of the class to support an unlimited number of IDs (map rather than array). **/
+/**
+ * Rewrite most of the class to support an unlimited number of IDs (map rather than array).
+ **/
 @Mixin(value = StatList.class, priority = 500)
 public final class MixinStatList {
-    @Final
-    @Shadow
-    public static List<StatBase> ALL_STATS;
-    @Final
-    @Shadow
-    public static List<StatBase> BASIC_STATS;
-    @Final
-    @Shadow
-    public static List<StatCrafting> MINE_BLOCK_STATS;
-
     /**
      * Temporary array to hold StatBase objects. These objects should always be set to null
      * as they are added.
@@ -63,6 +54,15 @@ public final class MixinStatList {
     private static final Map<Item, StatBase> OBJECTS_PICKED_UP_STATS_MAP = new HashMap<>();
     @Unique
     private static final Map<Item, StatBase> OBJECTS_DROPPED_STATS_MAP = new HashMap<>();
+    @Final
+    @Shadow
+    public static List<StatBase> ALL_STATS;
+    @Final
+    @Shadow
+    public static List<StatBase> BASIC_STATS;
+    @Final
+    @Shadow
+    public static List<StatCrafting> MINE_BLOCK_STATS;
 
     /**
      * @reason Reduce memory footprint of unused stat arrays
@@ -87,6 +87,7 @@ public final class MixinStatList {
     }
 
     // region GET_BLOCK_STATS
+
     /**
      * @reason Prevent IndexOutOfBoundsException
      */
@@ -102,6 +103,7 @@ public final class MixinStatList {
     // endregion
 
     // region GET_CRAFT_STATS
+
     /**
      * @reason Prevent IndexOutOfBoundsException
      */
@@ -117,6 +119,7 @@ public final class MixinStatList {
     // endregion
 
     // region GET_OBJECT_USE_STATS
+
     /**
      * @reason Prevent IndexOutOfBoundsException
      */
@@ -132,6 +135,7 @@ public final class MixinStatList {
     // endregion
 
     // region GET_OBJECT_BREAK_STATS
+
     /**
      * @reason Prevent IndexOutOfBoundsException
      */
@@ -147,6 +151,7 @@ public final class MixinStatList {
     // endregion
 
     // region GET_OBJECTS_PICKED_UP_STATS
+
     /**
      * @reason Prevent IndexOutOfBoundsException
      */
@@ -162,6 +167,7 @@ public final class MixinStatList {
     // endregion
 
     // region GET_DROPPED_OBJECT_STATS
+
     /**
      * @reason Prevent IndexOutOfBoundsException
      */
@@ -177,6 +183,7 @@ public final class MixinStatList {
     // endregion
 
     // region MINING STATS
+
     /**
      * @reason Disable default array read/write logic
      */
@@ -189,7 +196,7 @@ public final class MixinStatList {
      * @reason Get stat to add
      */
     @ModifyReceiver(method = "initMiningStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
-    private static StatCrafting reid$getMiningStat(StatCrafting instance, @Share("stat") LocalRef<StatCrafting> stat){
+    private static StatCrafting reid$getMiningStat(StatCrafting instance, @Share("stat") LocalRef<StatCrafting> stat) {
         stat.set(instance);
         return instance;
     }
@@ -211,6 +218,7 @@ public final class MixinStatList {
     // endregion
 
     // region USE STATS
+
     /**
      * @reason Disable default array read/write logic
      */
@@ -223,7 +231,7 @@ public final class MixinStatList {
      * @reason Get stat to add
      */
     @ModifyReceiver(method = "initStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
-    private static StatCrafting reid$getUseStat(StatCrafting instance, @Share("stat") LocalRef<StatCrafting> stat){
+    private static StatCrafting reid$getUseStat(StatCrafting instance, @Share("stat") LocalRef<StatCrafting> stat) {
         stat.set(instance);
         return instance;
     }
@@ -252,6 +260,7 @@ public final class MixinStatList {
     // endregion
 
     // region CRAFTABLE STATS
+
     /**
      * @reason Disable default array write logic
      */
@@ -264,7 +273,7 @@ public final class MixinStatList {
      * @reason Get stat to add
      */
     @ModifyReceiver(method = "initCraftableStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
-    private static StatCrafting reid$getCraftStat(StatCrafting instance, @Share("stat") LocalRef<StatCrafting> stat){
+    private static StatCrafting reid$getCraftStat(StatCrafting instance, @Share("stat") LocalRef<StatCrafting> stat) {
         stat.set(instance);
         return instance;
     }
@@ -285,6 +294,7 @@ public final class MixinStatList {
     // endregion
 
     // region BREAK STATS
+
     /**
      * @reason Disable default array write logic
      */
@@ -297,7 +307,7 @@ public final class MixinStatList {
      * @reason Get stat to add
      */
     @ModifyReceiver(method = "initItemDepleteStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
-    private static StatCrafting reid$getBreakStat(StatCrafting instance, @Share("stat") LocalRef<StatCrafting> stat){
+    private static StatCrafting reid$getBreakStat(StatCrafting instance, @Share("stat") LocalRef<StatCrafting> stat) {
         stat.set(instance);
         return instance;
     }
@@ -318,6 +328,7 @@ public final class MixinStatList {
     // endregion
 
     // region PICKED UP/DROPPED STATS
+
     /**
      * @reason Disable default array write logic
      */
@@ -338,7 +349,7 @@ public final class MixinStatList {
      * @reason Get stat to add
      */
     @ModifyReceiver(method = "initPickedUpAndDroppedStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", ordinal = 0))
-    private static StatCrafting reid$getPickupStat(StatCrafting instance, @Share("statPickup") LocalRef<StatCrafting> statPickup){
+    private static StatCrafting reid$getPickupStat(StatCrafting instance, @Share("statPickup") LocalRef<StatCrafting> statPickup) {
         statPickup.set(instance);
         return instance;
     }
@@ -347,7 +358,7 @@ public final class MixinStatList {
      * @reason Get stat to add
      */
     @ModifyReceiver(method = "initPickedUpAndDroppedStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", ordinal = 1))
-    private static StatCrafting reid$getDropStat(StatCrafting instance, @Share("statDrop") LocalRef<StatCrafting> statDrop){
+    private static StatCrafting reid$getDropStat(StatCrafting instance, @Share("statDrop") LocalRef<StatCrafting> statDrop) {
         statDrop.set(instance);
         return instance;
     }
@@ -382,7 +393,7 @@ public final class MixinStatList {
         knownStats.addAll(OBJECTS_DROPPED_STATS_MAP.values());
         ArrayList<StatBase> unknownStats = new ArrayList<>();
         for (StatBase stat : allStats) {
-            if(!knownStats.contains(stat)) {
+            if (!knownStats.contains(stat)) {
                 unknownStats.add(stat);
             }
         }
@@ -439,8 +450,7 @@ public final class MixinStatList {
         StatBase stat2 = statBaseIn.get(block2);
         if (stat1 != null && stat2 == null) {
             statBaseIn.put(block2, stat1);
-        }
-        else {
+        } else {
             ALL_STATS.remove(stat1);
             BASIC_STATS.remove(stat1);
             MINE_BLOCK_STATS.remove(stat1);
@@ -457,8 +467,7 @@ public final class MixinStatList {
         StatBase stat2 = statBaseIn.get(item2);
         if (stat1 != null && stat2 == null) {
             statBaseIn.put(item2, statBaseIn.get(item1));
-        }
-        else {
+        } else {
             ALL_STATS.remove(stat1);
             BASIC_STATS.remove(stat1);
             MINE_BLOCK_STATS.remove(stat1);

@@ -19,7 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AnvilChunkLoader.class)
 public class MixinAnvilChunkLoader {
-    /** @reason Read palette from NBT for JustEnoughIDs BlockStateContainers. */
+    /**
+     * @reason Read palette from NBT for JustEnoughIDs BlockStateContainers.
+     */
     @Inject(method = "readChunkFromNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/storage/ExtendedBlockStorage;<init>(IZ)V", shift = At.Shift.BY, by = 2))
     private void reid$readPaletteNBT(CallbackInfoReturnable<Chunk> cir, @Local(ordinal = 1) NBTTagCompound storageNBT, @Local ExtendedBlockStorage extendedBlockStorage) {
         int[] palette = storageNBT.hasKey("Palette", 11) ? storageNBT.getIntArray("Palette") : null;
@@ -28,14 +30,18 @@ public class MixinAnvilChunkLoader {
         ((INewBlockStateContainer) extendedBlockStorage.getData()).setLegacyAdd2(add2);
     }
 
-    /** @reason Write palette to NBT for JustEnoughIDs BlockStateContainers. */
+    /**
+     * @reason Write palette to NBT for JustEnoughIDs BlockStateContainers.
+     */
     @Inject(method = "writeChunkToNBT", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/chunk/BlockStateContainer;getDataForNBT([BLnet/minecraft/world/chunk/NibbleArray;)Lnet/minecraft/world/chunk/NibbleArray;", ordinal = 0))
     private void reid$writePaletteNBT(CallbackInfo ci, @Local ExtendedBlockStorage extendedBlockStorage, @Local(ordinal = 1) NBTTagCompound storageNBT) {
         int[] palette = ((INewBlockStateContainer) extendedBlockStorage.getData()).getTemporaryPalette();
         if (palette != null) storageNBT.setIntArray("Palette", palette);
     }
 
-    /** @reason Read int biome array from NBT if it's there. */
+    /**
+     * @reason Read int biome array from NBT if it's there.
+     */
     @Inject(method = "readChunkFromNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;hasKey(Ljava/lang/String;I)Z", ordinal = 1))
     private void reid$readBiomeArray(World world, NBTTagCompound nbt, CallbackInfoReturnable<Chunk> cir, @Local Chunk chunk) {
         INewChunk newChunk = (INewChunk) chunk;
@@ -52,19 +58,27 @@ public class MixinAnvilChunkLoader {
         }
     }
 
-    /** @reason Disable default biome array save logic. */
+    /**
+     * @reason Disable default biome array save logic.
+     */
     @Redirect(method = "writeChunkToNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;setByteArray(Ljava/lang/String;[B)V", ordinal = 6))
     private void reid$defaultWriteBiomeArray(NBTTagCompound nbt, String key, byte[] value) {
-        if (!key.equals("Biomes")) throw new AssertionError(JEID.MODID + " :: Ordinal 6 of setByteArray isn't \"Biomes\"");
+        if (!key.equals("Biomes")) {
+            throw new AssertionError(JEID.MODID + " :: Ordinal 6 of setByteArray isn't \"Biomes\"");
+        }
     }
 
-    /** @reason Disable default biome array save logic. */
+    /**
+     * @reason Disable default biome array save logic.
+     */
     @Redirect(method = "writeChunkToNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;getBiomeArray()[B", ordinal = 0))
     private byte[] reid$defaultWriteBiomeArray(Chunk chunk) {
         return new byte[0];
     }
 
-    /** @reason Save the correct biome array type */
+    /**
+     * @reason Save the correct biome array type
+     */
     @Inject(method = "writeChunkToNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;setByteArray(Ljava/lang/String;[B)V", ordinal = 6))
     private void reid$writeBiomeArray(Chunk chunk, World worldIn, NBTTagCompound nbt, CallbackInfo ci) {
         INewChunk newChunk = (INewChunk) chunk;

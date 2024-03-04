@@ -19,8 +19,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(RenderGlobal.class)
 public class MixinRenderGlobal {
-    @Shadow @Final private Minecraft mc;
-    @Shadow private WorldClient world;
+    @Shadow
+    @Final
+    private Minecraft mc;
+    @Shadow
+    private WorldClient world;
 
     @Inject(method = "playEvent", at = @At("HEAD"), cancellable = true)
     private void reid$onPlayEvent(EntityPlayer player, int type, BlockPos blockPosIn, int data, CallbackInfo ci) {

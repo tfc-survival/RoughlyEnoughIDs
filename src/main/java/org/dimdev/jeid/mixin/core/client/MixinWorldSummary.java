@@ -10,7 +10,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(WorldSummary.class)
 public class MixinWorldSummary {
-    @Shadow @Final private int versionId;
+    @Shadow
+    @Final
+    private int versionId;
 
     // @ModifyReturnValue doesn't seem to work here
     @Inject(method = "askToOpenWorld", at = @At(value = "RETURN"), cancellable = true)

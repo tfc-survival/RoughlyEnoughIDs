@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class MixinPacketBuffer {
     @Shadow
     public abstract int readVarInt();
+
     @Shadow
     public abstract PacketBuffer writeVarInt(int input);
 

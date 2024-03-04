@@ -6,7 +6,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.common.Loader;
-
 import org.dimdev.jeid.ducks.INewChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,10 +21,15 @@ import rtg.world.biome.BiomeProviderRTG;
 @Mixin(ChunkProviderServer.class)
 public class MixinChunkProviderServer {
 
-    @Shadow @Final public WorldServer world;
-    @Shadow @Final @Mutable public final IChunkGenerator chunkGenerator;
+    @Shadow
+    @Final
+    @Mutable
+    public final IChunkGenerator chunkGenerator;
     @Unique
     private final Biome[] reusableBiomeList = new Biome[256];
+    @Shadow
+    @Final
+    public WorldServer world;
 
     protected MixinChunkProviderServer(IChunkGenerator chunkGenerator) {
         this.chunkGenerator = chunkGenerator;

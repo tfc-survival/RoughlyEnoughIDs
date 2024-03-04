@@ -12,7 +12,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Block.class)
 public class MixinBlock {
-    @Shadow public static int getIdFromBlock(Block blockIn) { return 0; }
+    @Shadow
+    public static int getIdFromBlock(Block blockIn) {
+        return 0;
+    }
 
     /**
      * @reason Use JustEnoughIDs ID format (id, meta rather than meta, id) for
@@ -40,8 +43,7 @@ public class MixinBlock {
     private static int reid$useJEIDId(int vanillaId, @Local(ordinal = 0) int stateId) {
         if ((stateId & 0xffff0000) == 0) {
             return vanillaId;
-        }
-        else {
+        } else {
             return stateId >> 4;
         }
     }
@@ -53,8 +55,7 @@ public class MixinBlock {
     private static int reid$useJEIDMeta(int vanillaMeta, @Local(ordinal = 0) int stateId) {
         if ((stateId & 0xffff0000) == 0) {
             return vanillaMeta;
-        }
-        else {
+        } else {
             return stateId & 0xF;
         }
     }

@@ -15,9 +15,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SPacketChunkData.class)
 public abstract class MixinSPacketChunkData {
-    @Shadow public abstract boolean isFullChunk();
+    @Shadow
+    public abstract boolean isFullChunk();
 
-    /** @reason Write the biome int array. **/
+    /**
+     * @reason Write the biome int array.
+     **/
     @Inject(method = "extractChunkData", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/play/server/SPacketChunkData;isFullChunk()Z", ordinal = 1))
     public void reid$writeBiomeArray(PacketBuffer buf, Chunk chunk, boolean writeSkylight, int changedSectionFilter, CallbackInfoReturnable<Integer> cir) {
         if (isFullChunk()) {
@@ -25,13 +28,17 @@ public abstract class MixinSPacketChunkData {
         }
     }
 
-    /** @reason Disable writing biome byte array. **/
+    /**
+     * @reason Disable writing biome byte array.
+     **/
     @Redirect(method = "extractChunkData", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/play/server/SPacketChunkData;isFullChunk()Z", ordinal = 1))
     public boolean reid$getIsFullChunk(SPacketChunkData packet) {
         return false;
     }
 
-    /** @reason Disable adding biome byte array size. **/
+    /**
+     * @reason Disable adding biome byte array size.
+     **/
     @Redirect(method = "calculateChunkSize", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/play/server/SPacketChunkData;isFullChunk()Z", ordinal = 1))
     public boolean reid$getIsFullChunk1(SPacketChunkData packet) {
         return false;
@@ -48,7 +55,7 @@ public abstract class MixinSPacketChunkData {
     @Unique
     private int getVarIntArraySize(int[] array) {
         int size = PacketBuffer.getVarIntSize(array.length);
-        for (int i: array) {
+        for (int i : array) {
             size += PacketBuffer.getVarIntSize(i);
         }
         return size;
