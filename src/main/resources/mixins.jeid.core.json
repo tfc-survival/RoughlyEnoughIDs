@@ -32,6 +32,7 @@
     "potion.client.MixinNetHandlerPlayClient"
   ],
   "injectors": {
-    "maxShiftBy": 10
+    "maxShiftBy": 10,
+    "require": 1
   }
 }

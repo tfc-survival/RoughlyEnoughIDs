@@ -1,84 +1,30 @@
 package org.dimdev.jeid.mixin.core;
 
-import net.minecraft.client.util.ITooltipFlag;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemEnchantedBook;
-import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import org.dimdev.jeid.JEID;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-
-import javax.annotation.Nullable;
-import java.util.List;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(ItemEnchantedBook.class)
-public class MixinItemEnchantedBook extends Item {
-
-    @Shadow public static NBTTagList getEnchantments(ItemStack p_92110_0_) { NBTTagCompound nbttagcompound = p_92110_0_.getTagCompound();
-        return nbttagcompound != null ? nbttagcompound.getTagList("StoredEnchantments", 10) : new NBTTagList(); }
-
-    @Overwrite
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-    {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
-        NBTTagList nbttaglist = getEnchantments(stack);
-
-        for (int i = 0; i < nbttaglist.tagCount(); ++i)
-        {
-            NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-            Enchantment enchantment = Enchantment.getEnchantmentByID(nbttagcompound.getInteger("id"));
-
-            if (enchantment != null)
-            {
-                tooltip.add(enchantment.getTranslatedName(nbttagcompound.getShort("lvl")));
-            }
-        }
+public class MixinItemEnchantedBook {
+    @ModifyArg(method = "addEnchantment", at = @At(value = "INVOKE", target = "Lnet/minecraft/enchantment/Enchantment;getEnchantmentByID(I)Lnet/minecraft/enchantment/Enchantment;"))
+    private static int reid$getIntEnchIdForAdd(int original, @Local(ordinal = 0) NBTTagCompound nbtTagCompound) {
+        return nbtTagCompound.getInteger("id");
     }
 
-    @Overwrite
-    public static void addEnchantment(ItemStack p_92115_0_, EnchantmentData stack)
-    {
-        NBTTagList nbttaglist = getEnchantments(p_92115_0_);
-        boolean flag = true;
-
-        for (int i = 0; i < nbttaglist.tagCount(); ++i)
-        {
-            NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-
-            if (Enchantment.getEnchantmentByID(nbttagcompound.getInteger("id")) == stack.enchantment)
-            {
-                if (nbttagcompound.getShort("lvl") < stack.enchantmentLevel)
-                {
-                    nbttagcompound.setShort("lvl", (short)stack.enchantmentLevel);
-                }
-
-                flag = false;
-                break;
-            }
-        }
-
-        if (flag)
-        {
-            NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-            nbttagcompound1.setInteger("id", Enchantment.getEnchantmentID(stack.enchantment));
-            nbttagcompound1.setShort("lvl", (short)stack.enchantmentLevel);
-            nbttaglist.appendTag(nbttagcompound1);
-        }
-
-        if (!p_92115_0_.hasTagCompound())
-        {
-            p_92115_0_.setTagCompound(new NBTTagCompound());
-        }
-
-        p_92115_0_.getTagCompound().setTag("StoredEnchantments", nbttaglist);
+    // LVT gets modified by above mixin, let's just remove the short, add the int id
+    @ModifyArg(method = "addEnchantment", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagList;appendTag(Lnet/minecraft/nbt/NBTBase;)V", ordinal = 0))
+    private static NBTBase reid$setIntEnchIdForAdd(NBTBase nbt, @Local(argsOnly = true) EnchantmentData data) {
+        if (!(nbt instanceof NBTTagCompound)) throw new AssertionError(JEID.MODID + " :: NBTTagList#appendTag argument of addEnchantment isn't \"NBTTagCompound\"");
+        NBTTagCompound nbtTagCompound = (NBTTagCompound) nbt;
+        nbtTagCompound.removeTag("id");
+        nbtTagCompound.setInteger("id", Enchantment.getEnchantmentID(data.enchantment));
+        return nbtTagCompound;
     }
-
 }

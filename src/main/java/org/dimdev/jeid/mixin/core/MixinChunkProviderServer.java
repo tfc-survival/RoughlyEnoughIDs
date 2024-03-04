@@ -7,11 +7,12 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.common.Loader;
 
-import org.dimdev.jeid.INewChunk;
+import org.dimdev.jeid.ducks.INewChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -23,6 +24,7 @@ public class MixinChunkProviderServer {
 
     @Shadow @Final public WorldServer world;
     @Shadow @Final @Mutable public final IChunkGenerator chunkGenerator;
+    @Unique
     private final Biome[] reusableBiomeList = new Biome[256];
 
     protected MixinChunkProviderServer(IChunkGenerator chunkGenerator) {
@@ -33,7 +35,7 @@ public class MixinChunkProviderServer {
      * @reason Return an empty biome byte array if the chunk is using an int biome array.
      */
     @Inject(method = "provideChunk", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/gen/IChunkGenerator;generateChunk(II)Lnet/minecraft/world/chunk/Chunk;"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void initializeBiomeArray(int x, int z, CallbackInfoReturnable<Chunk> cir, Chunk chunk, long chunkPos) {
+    private void initializeBiomeArray(int x, int z, CallbackInfoReturnable<Chunk> cir, Chunk chunk) {
         if (!Loader.isModLoaded("rtg") || !(world.getBiomeProvider() instanceof BiomeProviderRTG)) {
             Biome[] biomes = world.getBiomeProvider().getBiomes(reusableBiomeList, x * 16, z * 16, 16, 16);
 

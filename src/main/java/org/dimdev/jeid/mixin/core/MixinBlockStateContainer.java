@@ -7,9 +7,10 @@ import net.minecraft.util.BitArray;
 import net.minecraft.world.chunk.BlockStateContainer;
 import net.minecraft.world.chunk.IBlockStatePalette;
 import net.minecraft.world.chunk.NibbleArray;
-import org.dimdev.jeid.INewBlockStateContainer;
+import org.dimdev.jeid.ducks.INewBlockStateContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -21,12 +22,11 @@ import java.util.Map;
 @Mixin(BlockStateContainer.class)
 public abstract class MixinBlockStateContainer implements INewBlockStateContainer {
     @Shadow protected abstract IBlockState get(int index);
-    @Shadow @SuppressWarnings("unused") protected BitArray storage;
-    @Shadow @SuppressWarnings("unused") protected IBlockStatePalette palette;
     @Shadow protected abstract void set(int index, IBlockState state);
-    @Shadow @SuppressWarnings("unused") protected abstract void setBits(int bitsIn);
 
+    @Unique
     private int[] temporaryPalette; // index -> state id
+    @Unique
     private NibbleArray add2; // NEID format
 
     @Override
@@ -86,7 +86,7 @@ public abstract class MixinBlockStateContainer implements INewBlockStateContaine
     @SuppressWarnings("deprecation")
     @Inject(method = "setDataFromNBT", at = @At("HEAD"), cancellable = true)
     private void newSetDataFromNBT(byte[] blockIds, NibbleArray data, NibbleArray blockIdExtension, CallbackInfo ci) {
-        if (temporaryPalette == null) { // Read containers in in pallette format only if the container has a palette (has a palette)
+        if (temporaryPalette == null) { // Read containers in palette format only if the container has a palette (has a palette)
             for (int index = 0; index < 4096; ++index) {
                 int x = index & 15;
                 int y = index >> 8 & 15;
