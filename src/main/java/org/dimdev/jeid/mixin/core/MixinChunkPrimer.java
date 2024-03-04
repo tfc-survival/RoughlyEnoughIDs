@@ -21,7 +21,7 @@ public class MixinChunkPrimer {
     private int[] intData = new int[65536];
 
     @ModifyArg(method = "getBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ObjectIntIdentityMap;getByValue(I)Ljava/lang/Object;"))
-    private int reidGetIntDataForBlockState(int original, @Local(ordinal = 0) int x, @Local(ordinal = 1) int y, @Local(ordinal = 2) int z) {
+    private int reidGetIntDataForBlockState(int original, @Local(argsOnly = true, ordinal = 0) int x, @Local(argsOnly = true, ordinal = 1) int y, @Local(argsOnly = true, ordinal = 2) int z) {
         return intData[getBlockIndex(x, y, z)];
     }
 
@@ -33,7 +33,7 @@ public class MixinChunkPrimer {
     }
 
     @ModifyArg(method = "findGroundBlockIdx", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ObjectIntIdentityMap;getByValue(I)Ljava/lang/Object;"))
-    private int reidGetIntDataForGroundBlock(int original, @Local(name = "i") int i, @Local(name = "j") int j) {
+    private int reidGetIntDataForGroundBlock(int original, @Local(ordinal = 2) int i, @Local(ordinal = 3) int j) {
         return intData[i + j];
     }
 }
