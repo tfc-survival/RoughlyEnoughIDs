@@ -14,27 +14,27 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public abstract class MixinGameData {
     /** @reason Removes the block ID limit. */
     @ModifyConstant(method = "init", constant = @Constant(intValue = 4095, ordinal = 0), remap = false)
-    private static int getBlockIDLimit(int value) {
+    private static int reid$getBlockIDLimit(int value) {
         return Integer.MAX_VALUE - 1;
     }
 
     /** @reason Removes the item ID limit. */
     @ModifyConstant(method = "init", constant = @Constant(intValue = 31999, ordinal = 0), remap = false)
-    private static int getItemIDLimit(int value) {
+    private static int reid$getItemIDLimit(int value) {
         return Integer.MAX_VALUE - 1;
     }
 
     /** @reason Removes the potion ID limit. */
     @ModifyConstant(method = "init", constant = @Constant(intValue = 255, ordinal = 0), remap = false)
-    private static int getPotionIDLimit(int value) {
+    private static int reid$getPotionIDLimit(int value) {
         return Integer.MAX_VALUE - 1;
     }
 
     /** @reason Removes the biome ID limit. */
     @ModifyConstant(method = "init", constant = @Constant(intValue = 255, ordinal = 1), remap = false)
-    private static int getBiomeIDLimit(int value) { return Integer.MAX_VALUE - 1; }
+    private static int reid$getBiomeIDLimit(int value) { return Integer.MAX_VALUE - 1; }
 
     /** @reason Removes the enchantment ID limit. */
     @ModifyConstant(method = "init", constant = @Constant(intValue = Short.MAX_VALUE - 1, ordinal = 0), remap = false)
-    private static int getEnchantmentIDLimit(int value) { return Integer.MAX_VALUE - 1; }
+    private static int reid$getEnchantmentIDLimit(int value) { return Integer.MAX_VALUE - 1; }
 }

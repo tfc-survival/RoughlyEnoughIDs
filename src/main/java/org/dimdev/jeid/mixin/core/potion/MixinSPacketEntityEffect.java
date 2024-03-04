@@ -24,19 +24,19 @@ public class MixinSPacketEntityEffect implements IStoredEffectInt {
 
     @Final
     @Inject(method = "<init>(ILnet/minecraft/potion/PotionEffect;)V", at = @At(value = "RETURN"))
-    private void reidInitEffectInt(int entityIdIn, PotionEffect effect, CallbackInfo ci) {
+    private void reid$initEffectInt(int entityIdIn, PotionEffect effect, CallbackInfo ci) {
         reid$effectInt = Potion.getIdFromPotion(effect.getPotion());
     }
 
     @Final
     @Inject(method = "readPacketData", at = @At(value = "TAIL"))
-    private void reidReadEffectInt(PacketBuffer buf, CallbackInfo ci) {
+    private void reid$readEffectInt(PacketBuffer buf, CallbackInfo ci) {
         reid$effectInt = buf.readVarInt();
     }
 
     @Final
     @Inject(method = "writePacketData", at = @At(value = "TAIL"))
-    private void reidWriteEffectInt(PacketBuffer buf, CallbackInfo ci) {
+    private void reid$writeEffectInt(PacketBuffer buf, CallbackInfo ci) {
         buf.writeVarInt(reid$effectInt);
     }
 

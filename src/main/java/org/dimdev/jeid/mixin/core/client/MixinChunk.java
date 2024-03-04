@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(Chunk.class)
 public abstract class MixinChunk implements INewChunk {
     @Redirect(method = "read", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/PacketBuffer;readBytes([B)Lio/netty/buffer/ByteBuf;", ordinal = 2))
-    private ByteBuf readBiomeByteArray(PacketBuffer buf, byte[] dst) {
+    private ByteBuf reid$readBiomeByteArray(PacketBuffer buf, byte[] dst) {
         setIntBiomeArray(buf.readVarIntArray());
         return buf;
     }

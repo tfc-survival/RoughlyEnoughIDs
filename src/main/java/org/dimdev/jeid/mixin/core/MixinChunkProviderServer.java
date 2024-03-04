@@ -35,7 +35,7 @@ public class MixinChunkProviderServer {
      * @reason Return an empty biome byte array if the chunk is using an int biome array.
      */
     @Inject(method = "provideChunk", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/gen/IChunkGenerator;generateChunk(II)Lnet/minecraft/world/chunk/Chunk;"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void initializeBiomeArray(int x, int z, CallbackInfoReturnable<Chunk> cir, Chunk chunk) {
+    private void reid$initializeBiomeArray(int x, int z, CallbackInfoReturnable<Chunk> cir, Chunk chunk) {
         if (!Loader.isModLoaded("rtg") || !(world.getBiomeProvider() instanceof BiomeProviderRTG)) {
             Biome[] biomes = world.getBiomeProvider().getBiomes(reusableBiomeList, x * 16, z * 16, 16, 16);
 

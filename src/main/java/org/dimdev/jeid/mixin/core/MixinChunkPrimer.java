@@ -21,19 +21,19 @@ public class MixinChunkPrimer {
     private int[] intData = new int[65536];
 
     @ModifyArg(method = "getBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ObjectIntIdentityMap;getByValue(I)Ljava/lang/Object;"))
-    private int reidGetIntDataForBlockState(int original, @Local(argsOnly = true, ordinal = 0) int x, @Local(argsOnly = true, ordinal = 1) int y, @Local(argsOnly = true, ordinal = 2) int z) {
+    private int reid$getIntDataForBlockState(int original, @Local(argsOnly = true, ordinal = 0) int x, @Local(argsOnly = true, ordinal = 1) int y, @Local(argsOnly = true, ordinal = 2) int z) {
         return intData[getBlockIndex(x, y, z)];
     }
 
     @SuppressWarnings("deprecation")
     @Inject(method = "setBlockState", at = @At(value = "FIELD", target = "Lnet/minecraft/world/chunk/ChunkPrimer;data:[C"), cancellable = true)
-    private void setIntBlockState(int x, int y, int z, IBlockState state, CallbackInfo ci) {
+    private void reid$setIntBlockState(int x, int y, int z, IBlockState state, CallbackInfo ci) {
         intData[getBlockIndex(x, y, z)] = Block.BLOCK_STATE_IDS.get(state);
         ci.cancel();
     }
 
     @ModifyArg(method = "findGroundBlockIdx", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ObjectIntIdentityMap;getByValue(I)Ljava/lang/Object;"))
-    private int reidGetIntDataForGroundBlock(int original, @Local(ordinal = 2) int i, @Local(ordinal = 3) int j) {
+    private int reid$getIntDataForGroundBlock(int original, @Local(ordinal = 2) int i, @Local(ordinal = 3) int j) {
         return intData[i + j];
     }
 }

@@ -15,23 +15,23 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(EnchantmentHelper.class)
 public class MixinEnchantmentHelper {
     @ModifyArg(method = "getEnchantmentLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/enchantment/Enchantment;getEnchantmentByID(I)Lnet/minecraft/enchantment/Enchantment;"))
-    private static int reidGetIntEnchIdForLevel(int original, @Local NBTTagCompound nbtTagCompound) {
+    private static int reid$getIntEnchIdForLevel(int original, @Local NBTTagCompound nbtTagCompound) {
         return nbtTagCompound.getInteger("id");
     }
 
     @ModifyArg(method = "getEnchantments", at = @At(value = "INVOKE", target = "Lnet/minecraft/enchantment/Enchantment;getEnchantmentByID(I)Lnet/minecraft/enchantment/Enchantment;"))
-    private static int reidGetIntEnchIdForMap(int id, @Local NBTTagCompound nbtTagCompound) {
+    private static int reid$getIntEnchIdForMap(int id, @Local NBTTagCompound nbtTagCompound) {
         return nbtTagCompound.getInteger("id");
     }
 
     @Redirect(method = "setEnchantments", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;setShort(Ljava/lang/String;S)V", ordinal = 0))
-    private static void reidSetIntEnchId(NBTTagCompound instance, String key, short value, @Local Enchantment enchant, @Local NBTTagCompound nbtTagCompound) {
+    private static void reid$setIntEnchId(NBTTagCompound instance, String key, short value, @Local Enchantment enchant, @Local NBTTagCompound nbtTagCompound) {
         if (!key.equals("id")) throw new AssertionError(JEID.MODID + " :: Ordinal 0 of setEnchantments isn't \"id\"");
         nbtTagCompound.setInteger("id", Enchantment.getEnchantmentID(enchant));
     }
 
     @ModifyVariable(method = "applyEnchantmentModifier", at = @At(value = "STORE"), ordinal = 1)
-    private static int reidGetIntEnchIdForModifier(int id, @Local NBTTagList nbtTagList, @Local(ordinal = 0) int index) {
+    private static int reid$getIntEnchIdForModifier(int id, @Local NBTTagList nbtTagList, @Local(ordinal = 0) int index) {
         // Ints on LVT: (ordinal = 0) = int i, (ordinal = 1) = int j
         return nbtTagList.getCompoundTagAt(index).getInteger("id");
     }

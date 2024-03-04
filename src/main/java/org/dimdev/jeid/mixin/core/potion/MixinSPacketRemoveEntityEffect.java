@@ -19,13 +19,13 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class MixinSPacketRemoveEntityEffect {
     @Final
     @ModifyArg(method = "readPacketData", at = @At(value = "INVOKE", target = "Lnet/minecraft/potion/Potion;getPotionById(I)Lnet/minecraft/potion/Potion;"), index = 0)
-    private int reidReadIntPotionId(int original, @Local PacketBuffer buf) {
+    private int reid$readIntPotionId(int original, @Local PacketBuffer buf) {
         return buf.readInt();
     }
 
     @Final
     @Redirect(method = "writePacketData", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/PacketBuffer;writeByte(I)Lio/netty/buffer/ByteBuf;"))
-    private ByteBuf reidWriteIntPotionId(PacketBuffer instance, int potionId) {
+    private ByteBuf reid$writeIntPotionId(PacketBuffer instance, int potionId) {
         return instance.writeInt(potionId);
     }
 }

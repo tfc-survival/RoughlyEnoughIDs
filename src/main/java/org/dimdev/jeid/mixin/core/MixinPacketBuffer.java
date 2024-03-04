@@ -16,12 +16,12 @@ public abstract class MixinPacketBuffer {
     public abstract PacketBuffer writeVarInt(int input);
 
     @Redirect(method = "writeItemStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/PacketBuffer;writeShort(I)Lio/netty/buffer/ByteBuf;", ordinal = 0))
-    private ByteBuf writeIntItemId(PacketBuffer packetBuffer, int p_writeShort_1_) {
+    private ByteBuf reid$writeIntItemId(PacketBuffer packetBuffer, int p_writeShort_1_) {
         return writeVarInt(p_writeShort_1_);
     }
 
     @Redirect(method = "writeItemStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/PacketBuffer;writeShort(I)Lio/netty/buffer/ByteBuf;", ordinal = 1))
-    private ByteBuf writeIntItemId1(PacketBuffer packetBuffer, int p_writeShort_1_) {
+    private ByteBuf reid$writeIntItemId1(PacketBuffer packetBuffer, int p_writeShort_1_) {
         return writeVarInt(p_writeShort_1_);
     }
 
@@ -29,12 +29,12 @@ public abstract class MixinPacketBuffer {
      * @reason Disable default id read logic to prevent advancing readerIndex.
      */
     @Redirect(method = "readItemStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/PacketBuffer;readShort()S", ordinal = 0))
-    private short reidDefaultReadId(PacketBuffer instance) {
+    private short reid$defaultReadId(PacketBuffer instance) {
         return 0;
     }
 
     @ModifyVariable(method = "readItemStack", at = @At(value = "STORE"), ordinal = 0)
-    private int reidReadIntId(int original) {
+    private int reid$readIntId(int original) {
         return readVarInt();
     }
 }

@@ -23,7 +23,7 @@ public class MixinRenderGlobal {
     @Shadow private WorldClient world;
 
     @Inject(method = "playEvent", at = @At("HEAD"), cancellable = true)
-    private void onPlayEvent(EntityPlayer player, int type, BlockPos blockPosIn, int data, CallbackInfo ci) {
+    private void reid$onPlayEvent(EntityPlayer player, int type, BlockPos blockPosIn, int data, CallbackInfo ci) {
         if (type == 2001) {
             IBlockState state = Block.getStateById(data);
             if (state.getMaterial() != Material.AIR) {

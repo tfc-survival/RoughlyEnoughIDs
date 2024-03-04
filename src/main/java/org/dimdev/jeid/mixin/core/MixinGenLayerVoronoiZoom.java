@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(GenLayerVoronoiZoom.class)
 public abstract class MixinGenLayerVoronoiZoom {
     @ModifyConstant(method = "getInts", constant = @Constant(intValue = 255))
-    private int getBitMask(int oldValue) {
+    private int reid$getBitMask(int oldValue) {
         return 0xFFFFFFFF;
     }
 }
