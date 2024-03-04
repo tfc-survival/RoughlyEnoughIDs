@@ -1,4 +1,4 @@
-package org.dimdev.jeid.mixin.core;
+package org.dimdev.jeid.mixin.core.network;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.network.PacketBuffer;

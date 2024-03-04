@@ -1,4 +1,4 @@
-package org.dimdev.jeid.mixin.core;
+package org.dimdev.jeid.mixin.core.world;
 
 import net.minecraft.world.gen.layer.GenLayerVoronoiZoom;
 import org.spongepowered.asm.mixin.Mixin;

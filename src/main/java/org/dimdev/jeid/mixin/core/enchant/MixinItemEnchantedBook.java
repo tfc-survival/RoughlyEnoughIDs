@@ -1,4 +1,4 @@
-package org.dimdev.jeid.mixin.core;
+package org.dimdev.jeid.mixin.core.enchant;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.enchantment.Enchantment;

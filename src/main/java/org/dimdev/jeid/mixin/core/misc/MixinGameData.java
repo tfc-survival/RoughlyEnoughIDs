@@ -1,4 +1,4 @@
-package org.dimdev.jeid.mixin.core;
+package org.dimdev.jeid.mixin.core.misc;
 
 import net.minecraftforge.registries.GameData;
 import org.spongepowered.asm.mixin.Mixin;

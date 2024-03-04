@@ -1,4 +1,4 @@
-package org.dimdev.jeid.mixin.core.client;
+package org.dimdev.jeid.mixin.core.enchant.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.item.ItemEnchantedBook;

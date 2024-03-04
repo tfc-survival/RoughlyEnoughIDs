@@ -1,4 +1,4 @@
-package org.dimdev.jeid.mixin.core;
+package org.dimdev.jeid.mixin.core.world;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.nbt.NBTTagCompound;

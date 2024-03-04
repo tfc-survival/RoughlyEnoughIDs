@@ -1,4 +1,4 @@
-package org.dimdev.jeid.mixin.core;
+package org.dimdev.jeid.mixin.core.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;

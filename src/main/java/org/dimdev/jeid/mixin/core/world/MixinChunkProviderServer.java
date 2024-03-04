@@ -1,4 +1,4 @@
-package org.dimdev.jeid.mixin.core;
+package org.dimdev.jeid.mixin.core.world;
 
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
