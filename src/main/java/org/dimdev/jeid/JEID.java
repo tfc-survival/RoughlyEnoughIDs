@@ -14,11 +14,15 @@ import org.dimdev.jeid.network.MessageManager;
 @Mod(modid = JEID.MODID,
      name = JEID.NAME,
      version = JEID.VERSION,
-     dependencies = "required:mixinbooter@[8.0,)")
+     dependencies = JEID.DEPENDENCIES)
 public class JEID {
     public static final String MODID = Tags.MOD_ID;
     public static final String NAME = Tags.MOD_NAME;
     public static final String VERSION = Tags.VERSION;
+    public static final String DEPENDENCIES = "required:mixinbooter@[8.0,);"
+        + "after:abyssalcraft;"
+        + "after:advancedrocketry;"
+        + "after:compactmachines3";
     public static final Logger LOGGER = LogManager.getLogger(JEID.NAME);
 
     @Mod.EventHandler

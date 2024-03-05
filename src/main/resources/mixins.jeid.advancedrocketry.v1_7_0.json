@@ -1,13 +1,13 @@
 {
-  "package": "org.dimdev.jeid.mixin.modsupport",
+  "package": "org.dimdev.jeid.mixin.modsupport.advancedrocketry",
   "required": true,
   "refmap": "mixins.jeid.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.6",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "advancedrocketry.MixinBiomeHandler",
-    "advancedrocketry.MixinPacketBiomeIDChange"
+    "v1_7_0.MixinBiomeHandler",
+    "MixinPacketBiomeIDChange"
   ],
   "client": [],
   "injectors": {

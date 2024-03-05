@@ -11,11 +11,22 @@ public class JEIDMixinLoader implements ILateMixinLoader {
     public List<String> getMixinConfigs() {
         List<String> configs = new ArrayList<String>();
 
+        if (JEIDLoadingPlugin.isClient) {
+            if (Loader.isModLoaded("advancedrocketry")) {
+                configs.add("mixins.jeid.advancedrocketry.client.json");
+            }
+        }
+
         if (Loader.isModLoaded("abyssalcraft")) {
             configs.add("mixins.jeid.abyssalcraft.json");
         }
         if (Loader.isModLoaded("advancedrocketry")) {
-            configs.add("mixins.jeid.advancedrocketry.json");
+            String version = Loader.instance().getIndexedModList().get("advancedrocketry").getVersion();
+            if (version.split("-")[1].contains(".") && Integer.parseInt(version.split("-")[1].split("\\.")[0]) >= 2) {
+                configs.add("mixins.jeid.advancedrocketry.v2_0_0.json");
+            } else {
+                configs.add("mixins.jeid.advancedrocketry.v1_7_0.json");
+            }
         }
         if (Loader.isModLoaded("bewitchment")) {
             configs.add("mixins.jeid.bewitchment.json");
@@ -26,10 +37,10 @@ public class JEIDMixinLoader implements ILateMixinLoader {
         if (Loader.isModLoaded("biometweaker")) {
             configs.add("mixins.jeid.biometweaker.json");
         }
-        if (Loader.isModLoaded("bookeshelf")) {
+        if (Loader.isModLoaded("bookshelf")) {
             configs.add("mixins.jeid.bookshelf.json");
         }
-        if (Loader.isModLoaded("compactmachines")) {
+        if (Loader.isModLoaded("compactmachines3")) {
             configs.add("mixins.jeid.compactmachines.json");
         }
         if (Loader.isModLoaded("creepingnether")) {

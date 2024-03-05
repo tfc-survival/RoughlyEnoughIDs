@@ -134,7 +134,10 @@ dependencies {
     compileOnly rfg.deobf( "curse.maven:GeographiCraft-76544:2497541" )
     compileOnly rfg.deobf( "curse.maven:mystcraft-224599:2958490" )
     compileOnly rfg.deobf( "curse.maven:HammerCore-247401:3366814" )
+    // Advanced Rocketry 1.7.0
     compileOnly rfg.deobf( "curse.maven:AdvancedRocketry-236542:3015079" )
+    // Advanced Rocketry 2.0.0
+    // compileOnly rfg.deobf( "curse.maven:AdvancedRocketry-236542:4671856" )
     compileOnly rfg.deobf( "curse.maven:LibVulpes-236541:3434864" )
     compileOnly rfg.deobf( "curse.maven:worldedit-225608:2941712" )
     compileOnly rfg.deobf( "curse.maven:journeymap-32274:2916002" )
@@ -154,6 +157,7 @@ dependencies {
     compileOnly rfg.deobf( "curse.maven:CubicChunks-292243:5135427" )
     compileOnly rfg.deobf( "curse.maven:RTGU-648514:4396319" )
 
+    // implementation "curse.maven:LibVulpes-236541:3801015"
 }
 
 // Adds Access Transformer files to tasks

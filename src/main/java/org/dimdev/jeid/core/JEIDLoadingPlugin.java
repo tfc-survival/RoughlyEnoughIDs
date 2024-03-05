@@ -14,6 +14,7 @@ import java.util.Map;
 @IFMLLoadingPlugin.Name("JustEnoughIDs Extension Plugin")
 //@IFMLLoadingPlugin.TransformerExclusions("org.dimdev.jeid.")
 public class JEIDLoadingPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
+    public static final boolean isClient = FMLLaunchHandler.side().isClient();
     public static final boolean isDeobf = FMLLaunchHandler.isDeobfuscatedEnvironment();
 
     @Override
