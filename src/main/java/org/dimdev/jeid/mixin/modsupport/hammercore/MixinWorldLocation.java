@@ -18,8 +18,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(value = WorldLocation.class, remap = false)
 public class MixinWorldLocation {
-    @Shadow private World world;
-    @Shadow private BlockPos pos;
+    @Shadow
+    private World world;
+    @Shadow
+    private BlockPos pos;
 
     @Redirect(method = "setBiome", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;setBiomeArray([B)V", remap = true))
     private void reid$toIntBiomeArray(Chunk instance, byte[] biomeArray, Biome biome) {

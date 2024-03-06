@@ -20,7 +20,8 @@ import zmaster587.advancedRocketry.util.BiomeHandler;
 public class MixinBiomeHandler {
     @Dynamic("Only present with AR 1.7.0")
     @Shadow
-    public static void changeBiome(World world, int biomeId, BlockPos pos) {}
+    public static void changeBiome(World world, int biomeId, BlockPos pos) {
+    }
 
     @Dynamic("Use int biome array for AR 1.7.0")
     @Inject(method = "changeBiome(Lnet/minecraft/world/World;ILnet/minecraft/util/math/BlockPos;)V", at = @At(value = "INVOKE", target = "Lzmaster587/libVulpes/network/PacketHandler;sendToNearby(Lzmaster587/libVulpes/network/BasePacket;ILnet/minecraft/util/math/BlockPos;D)V"), require = 0)

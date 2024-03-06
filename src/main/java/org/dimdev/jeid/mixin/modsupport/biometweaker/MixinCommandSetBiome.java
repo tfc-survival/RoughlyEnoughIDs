@@ -27,8 +27,8 @@ import java.util.Arrays;
 public class MixinCommandSetBiome {
     @Inject(method = "execute", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;getBiomeArray()[B"))
     private void reid$setBiomeArrayElement(MinecraftServer server, ICommandSender sender, String[] args, CallbackInfo ci,
-                                      @Local BlockPos coord, @Local World world, @Local(ordinal = 0) int id,
-                                      @Local(ordinal = 2) int x, @Local(ordinal = 3) int z, @Local Chunk chunk) {
+                                           @Local BlockPos coord, @Local World world, @Local(ordinal = 0) int id,
+                                           @Local(ordinal = 2) int x, @Local(ordinal = 3) int z, @Local Chunk chunk) {
         JEID.LOGGER.info("setting biome at {}, {}", x, z);
         ((INewChunk) chunk).getIntBiomeArray()[(z & 0xF) << 4 | x & 0xF] = id;
         MessageManager.CHANNEL.sendToAllTracking(new BiomeChangeMessage(x, z, id), new NetworkRegistry.TargetPoint(world.provider.getDimension(), coord.getX(), coord.getY(), coord.getZ(), 256));

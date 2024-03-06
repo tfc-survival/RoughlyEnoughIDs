@@ -2,8 +2,6 @@ package org.dimdev.jeid.mixin.modsupport.creepingnether;
 
 import com.cutievirus.creepingnether.entity.CorruptorAbstract;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.zeitheron.hammercore.net.HCNet;
-import com.zeitheron.hammercore.net.IPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -22,7 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = CorruptorAbstract.class, remap = false)
 public abstract class MixinCorruptorAbstract {
-    @Shadow public abstract Biome getBiome();
+    @Shadow
+    public abstract Biome getBiome();
 
     @Inject(method = "corruptBiome", at = @At(value = "FIELD", target = "Lnet/minecraft/world/World;isRemote:Z", opcode = Opcodes.GETFIELD, remap = true))
     private void reid$toIntBiomeArray(World world, BlockPos pos, CallbackInfo ci, @Local Chunk chunk) {

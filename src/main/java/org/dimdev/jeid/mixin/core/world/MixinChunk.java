@@ -6,6 +6,7 @@ import net.minecraft.world.chunk.Chunk;
 import org.dimdev.jeid.biome.BiomeError;
 import org.dimdev.jeid.ducks.INewChunk;
 import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -50,7 +51,8 @@ public class MixinChunk implements INewChunk {
         cir.setReturnValue(arr);
     }
 
-    @SuppressWarnings("InvalidInjectorMethodSignature")
+    // TODO: might want to change getBiome a bit - see issue #14
+    @Dynamic("Read biome id from int biome array to int k")
     @ModifyVariable(method = "getBiome", at = @At(value = "STORE", ordinal = 0), name = "k")
     private int reid$fromIntBiomeArray(int original, @Local(name = "i") int i, @Local(name = "j") int j) {
         return this.intBiomeArray[j << 4 | i];

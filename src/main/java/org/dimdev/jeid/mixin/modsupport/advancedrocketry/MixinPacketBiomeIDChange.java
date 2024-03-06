@@ -5,7 +5,6 @@ import net.minecraft.world.chunk.Chunk;
 import org.dimdev.jeid.ducks.INewChunk;
 import org.dimdev.jeid.ducks.modsupport.advancedrocketry.IStoredBiomeArray;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

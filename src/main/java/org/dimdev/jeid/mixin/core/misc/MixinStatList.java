@@ -90,14 +90,7 @@ public final class MixinStatList {
     /**
      * @reason Reduce memory footprint of stat arrays
      */
-    @ModifyConstant(method = "<clinit>",
-        slice = @Slice(
-            id = "excludeTemp",
-            from = @At(value = "HEAD"),
-            to = @At(value = "FIELD", target = "Lnet/minecraft/stats/StatList;OBJECTS_DROPPED_STATS:[Lnet/minecraft/stats/StatBase;", opcode = Opcodes.PUTSTATIC)
-        ),
-        constant = @Constant(intValue = 32000, slice = "excludeTemp")
-    )
+    @ModifyConstant(method = "<clinit>", constant = @Constant(intValue = 32000))
     private static int reid$shrinkArrayShort(int original) {
         return 1;
     }

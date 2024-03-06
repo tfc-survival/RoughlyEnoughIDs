@@ -35,7 +35,7 @@ public class MixinChunkUtils {
         if (!key.equals("Biomes")) {
             throw new AssertionError(JEID.MODID + " :: NBTTagCompound#setByteArray key of writeChunkToNBT isn't \"Biomes\"");
         }
-        instance.setIntArray(key, ((INewChunk)chunkIn).getIntBiomeArray());
+        instance.setIntArray(key, ((INewChunk) chunkIn).getIntBiomeArray());
     }
 
     @Inject(method = "readChunkFromNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;getByteArray(Ljava/lang/String;)[B", ordinal = 0, remap = true))
