@@ -158,6 +158,8 @@ dependencies {
     compileOnly rfg.deobf( "curse.maven:RTGU-648514:4396319" )
 
     // implementation "curse.maven:LibVulpes-236541:3801015"
+    // implementation "curse.maven:Baubles-227083:2518667"
+    // implementation "curse.maven:mm-library-368098:3254750"
 }
 
 // Adds Access Transformer files to tasks

@@ -1,15 +1,14 @@
 {
-  "package": "org.dimdev.jeid.mixin.modsupport",
+  "package": "org.dimdev.jeid.mixin.modsupport.thebetweenlands",
   "required": true,
   "refmap": "mixins.jeid.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.6",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "thebetweenlands.MixinBlockSpreadingDeath",
-    "thebetweenlands.MixinGenLayerVoronoiZoomInstanced"
+    "MixinBlockSpreadingDeath",
+    "MixinGenLayerVoronoiZoomInstanced"
   ],
-  "client": [],
   "injectors": {
     "maxShiftBy": 10
   }

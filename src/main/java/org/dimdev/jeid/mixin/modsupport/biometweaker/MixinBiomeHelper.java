@@ -5,15 +5,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@Mixin(BiomeHelper.class)
+@Mixin(value = BiomeHelper.class, remap = false)
 public class MixinBiomeHelper {
-    @ModifyConstant(method = "getNextFreeBiomeId", constant = @Constant(intValue = 0xFF), remap = false)
-    private static int getMaxBiomeId(int oldValue) {
-        return 0xFFFFFFFF;
+    @ModifyConstant(method = "getNextFreeBiomeId", constant = @Constant(intValue = 256))
+    private static int reid$getLoopUpperLimit(int oldValue) {
+        return Integer.MAX_VALUE;
     }
 
-    @ModifyConstant(method = "getNextFreeBiomeId", constant = @Constant(intValue = 0x100), remap = false)
-    private static int getLoopUpperLimit(int oldValue) {
-        return 0x7FFFFFFF;
+    @ModifyConstant(method = "getNextFreeBiomeId", constant = @Constant(intValue = 255))
+    private static int reid$getMaxBiomeId(int oldValue) {
+        return Integer.MAX_VALUE - 1;
     }
 }

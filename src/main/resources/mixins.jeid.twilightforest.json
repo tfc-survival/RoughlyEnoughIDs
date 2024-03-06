@@ -9,7 +9,6 @@
     "MixinBlockTFMagicLogSpecial",
     "MixinGenLayerTFRiverMix"
   ],
-  "client": [],
   "injectors": {
     "maxShiftBy": 10
   }

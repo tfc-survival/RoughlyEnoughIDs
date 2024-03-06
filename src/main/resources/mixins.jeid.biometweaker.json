@@ -1,16 +1,15 @@
 {
-  "package": "org.dimdev.jeid.mixin.modsupport",
+  "package": "org.dimdev.jeid.mixin.modsupport.biometweaker",
   "required": true,
   "refmap": "mixins.jeid.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.6",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "biometweaker.MixinBiomeColorMappings",
-    "biometweaker.MixinBiomeHelper",
-    "biometweaker.MixinCommandSetBiome"
+    "MixinBiomeColorMappings",
+    "MixinBiomeHelper",
+    "MixinCommandSetBiome"
   ],
-  "client": [],
   "injectors": {
     "maxShiftBy": 10
   }

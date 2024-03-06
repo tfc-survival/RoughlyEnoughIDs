@@ -28,9 +28,6 @@ public class JEIDMixinLoader implements ILateMixinLoader {
                 configs.add("mixins.jeid.advancedrocketry.v1_7_0.json");
             }
         }
-        if (Loader.isModLoaded("bewitchment")) {
-            configs.add("mixins.jeid.bewitchment.json");
-        }
         if (Loader.isModLoaded("biomesoplenty")) {
             configs.add("mixins.jeid.biomesoplenty.json");
         }

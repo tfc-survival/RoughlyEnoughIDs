@@ -6,11 +6,10 @@ import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@Pseudo
-@Mixin(BOPCommand.class)
+@Mixin(value = BOPCommand.class, remap = false)
 public abstract class MixinBOPCommand {
-    @ModifyConstant(method = "teleportFoundBiome", constant = @Constant(intValue = 255), remap = false)
-    private int getMaxBiomeID(int oldValue) {
-        return Integer.MAX_VALUE;
+    @ModifyConstant(method = "teleportFoundBiome", constant = @Constant(intValue = 255))
+    private int reid$getMaxBiomeId(int oldValue) {
+        return Integer.MAX_VALUE - 1;
     }
 }

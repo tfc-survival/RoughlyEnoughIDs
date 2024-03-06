@@ -9,7 +9,6 @@
     "v1_7_0.MixinBiomeHandler",
     "MixinPacketBiomeIDChange"
   ],
-  "client": [],
   "injectors": {
     "maxShiftBy": 10
   }

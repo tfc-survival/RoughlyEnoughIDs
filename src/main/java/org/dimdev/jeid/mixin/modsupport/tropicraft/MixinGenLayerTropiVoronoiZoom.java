@@ -6,10 +6,9 @@ import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@Pseudo
 @Mixin(GenLayerTropiVoronoiZoom.class)
 public class MixinGenLayerTropiVoronoiZoom {
-    @ModifyConstant(method = "func_75904_a", constant = @Constant(intValue = 255), remap = false)
+    @ModifyConstant(method = "getInts", constant = @Constant(intValue = 255))
     private int getBitMask(int oldValue) {
         return 0xFFFFFFFF;
     }

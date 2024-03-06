@@ -22,7 +22,24 @@ public class JEID {
     public static final String DEPENDENCIES = "required:mixinbooter@[8.0,);"
         + "after:abyssalcraft;"
         + "after:advancedrocketry;"
-        + "after:compactmachines3";
+        + "after:biomesoplenty;"
+        + "after:biometweaker;"
+        + "after:bookshelf;"
+        + "after:compactmachines3;"
+        + "after:creepingnether;"
+        + "after:cyclopscore;"
+        + "after:extrautils2;"
+        + "after:gaiadimension;"
+        + "after:geographicraft;"
+        + "after:hammercore;"
+        + "after:journeymap;"
+        + "after:mystcraft;"
+        + "after:thaumcraft;"
+        + "after:thebetweenlands;"
+        + "after:tofucraft;"
+        + "after:tropicraft;"
+        + "after:twilightforest;"
+        + "after:worldedit";
     public static final Logger LOGGER = LogManager.getLogger(JEID.NAME);
 
     @Mod.EventHandler
@@ -30,6 +47,7 @@ public class JEID {
         // Register messages
         MessageManager.init();
         // Register Error Biome
+        BiomeError.createInstance();
         ForgeRegistries.BIOMES.register(BiomeError.getInstance());
         // Debug code
         MinecraftForge.EVENT_BUS.register(new RegistryDebug());
