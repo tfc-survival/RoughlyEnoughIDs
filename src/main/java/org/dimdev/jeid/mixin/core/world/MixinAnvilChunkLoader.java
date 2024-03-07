@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -59,13 +60,19 @@ public class MixinAnvilChunkLoader {
     }
 
     /**
-     * @reason Disable default biome array save logic.
+     * @reason Save the correct biome array type
      */
-    @Redirect(method = "writeChunkToNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;setByteArray(Ljava/lang/String;[B)V", ordinal = 6))
-    private void reid$defaultWriteBiomeArray(NBTTagCompound nbt, String key, byte[] value) {
+    @Redirect(method = "writeChunkToNBT",
+            slice = @Slice(
+                    id = "nbtBiomes",
+                    from = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;setTag(Ljava/lang/String;Lnet/minecraft/nbt/NBTBase;)V"),
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;setHasEntities(Z)V")
+            ), at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;setByteArray(Ljava/lang/String;[B)V", ordinal = 0, slice = "nbtBiomes"))
+    private void reid$writeBiomeArray(NBTTagCompound instance, String key, byte[] value, Chunk chunkIn) {
         if (!key.equals("Biomes")) {
-            throw new AssertionError(JEID.MODID + " :: Ordinal 6 of setByteArray isn't \"Biomes\"");
+            throw new AssertionError(JEID.MODID + " :: Sliced target setByteArray isn't \"Biomes\"");
         }
+        instance.setIntArray(key, ((INewChunk) chunkIn).getIntBiomeArray());
     }
 
     /**
@@ -74,14 +81,5 @@ public class MixinAnvilChunkLoader {
     @Redirect(method = "writeChunkToNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;getBiomeArray()[B", ordinal = 0))
     private byte[] reid$defaultWriteBiomeArray(Chunk chunk) {
         return new byte[0];
-    }
-
-    /**
-     * @reason Save the correct biome array type
-     */
-    @Inject(method = "writeChunkToNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;setByteArray(Ljava/lang/String;[B)V", ordinal = 6))
-    private void reid$writeBiomeArray(Chunk chunk, World worldIn, NBTTagCompound nbt, CallbackInfo ci) {
-        INewChunk newChunk = (INewChunk) chunk;
-        nbt.setIntArray("Biomes", newChunk.getIntBiomeArray());
     }
 }
