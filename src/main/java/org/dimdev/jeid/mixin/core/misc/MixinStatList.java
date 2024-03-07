@@ -1,8 +1,6 @@
 package org.dimdev.jeid.mixin.core.misc;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.Share;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -10,7 +8,6 @@ import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatCrafting;
 import net.minecraft.stats.StatList;
 import org.dimdev.jeid.JEID;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -210,8 +206,7 @@ public final class MixinStatList {
     @ModifyArg(method = "initMiningStats", at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", remap = false), index = 0)
     private static Object reid$addMiningStat(Object original, @Local Block key) {
         BLOCKS_STATS_MAP.put(key, (StatCrafting) original);
-        BLOCKS_STATS[0] = null;
-        return BLOCKS_STATS_MAP.get(key);
+        return original;
     }
 
     @Redirect(method = "initMiningStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatList;replaceAllSimilarBlocks([Lnet/minecraft/stats/StatBase;Z)V", remap = false))
@@ -236,19 +231,12 @@ public final class MixinStatList {
     /**
      * @reason Add to OBJECT_USE_STATS_MAP
      */
-    @Inject(method = "initStats", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", shift = At.Shift.AFTER))
-    private static void reid$addUseStat(CallbackInfo ci, @Local Item item, @Share("stat") LocalRef<StatCrafting> stat) {
-        OBJECT_USE_STATS_MAP.put(item, OBJECT_USE_STATS[0]);
-        stat.set((StatCrafting) OBJECT_USE_STATS[0]);
-        OBJECT_USE_STATS[0] = null;
-    }
-
-    /**
-     * @reason Add to USE_ITEM_STATS (vanilla) without using array
-     */
-    @ModifyArg(method = "initStats", at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", remap = false), index = 0)
-    private static Object reid$addUseStatItem(Object original, @Share("stat") LocalRef<StatCrafting> stat) {
-        return stat.get();
+    @Redirect(method = "initStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
+    private static StatBase reid$addUseStat(StatCrafting instance, @Local Item item) {
+        // Don't actually redirect
+        instance.registerStat();
+        OBJECT_USE_STATS_MAP.put(item, instance);
+        return instance;
     }
 
     @Redirect(method = "initStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatList;replaceAllSimilarBlocks([Lnet/minecraft/stats/StatBase;Z)V", remap = false))
@@ -274,10 +262,12 @@ public final class MixinStatList {
     /**
      * @reason Add to CRAFTS_STATS_MAP
      */
-    @Inject(method = "initCraftableStats", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", shift = At.Shift.AFTER))
-    private static void reid$addCraftStat(CallbackInfo ci, @Local Item item) {
-        CRAFTS_STATS_MAP.put(item, CRAFTS_STATS[0]);
-        CRAFTS_STATS[0] = null;
+    @Redirect(method = "initCraftableStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
+    private static StatBase reid$addCraftStat(StatCrafting instance, @Local Item item) {
+        // Don't actually redirect
+        instance.registerStat();
+        CRAFTS_STATS_MAP.put(item, instance);
+        return instance;
     }
 
     @Redirect(method = "initCraftableStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatList;replaceAllSimilarBlocks([Lnet/minecraft/stats/StatBase;Z)V", remap = false))
@@ -303,10 +293,12 @@ public final class MixinStatList {
     /**
      * @reason Add to OBJECT_BREAK_STATS_MAP
      */
-    @Inject(method = "initItemDepleteStats", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", shift = At.Shift.AFTER))
-    private static void reid$addBreakStat(CallbackInfo ci, @Local Item item) {
-        OBJECT_BREAK_STATS_MAP.put(item, OBJECT_BREAK_STATS[0]);
-        OBJECT_BREAK_STATS[0] = null;
+    @Redirect(method = "initItemDepleteStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;"))
+    private static StatBase reid$addBreakStat(StatCrafting instance, @Local Item item) {
+        // Don't actually redirect
+        instance.registerStat();
+        OBJECT_BREAK_STATS_MAP.put(item, instance);
+        return instance;
     }
 
     @Redirect(method = "initItemDepleteStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatList;replaceAllSimilarBlocks([Lnet/minecraft/stats/StatBase;Z)V", remap = false))
@@ -330,14 +322,25 @@ public final class MixinStatList {
     }
 
     /**
-     * @reason Add to OBJECTS_PICKED_UP_STATS_MAP and OBJECTS_DROPPED_STATS_MAP without using array
+     * @reason Add to OBJECTS_PICKED_UP_STATS_MAP
      */
-    @Inject(method = "initPickedUpAndDroppedStats", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", ordinal = 1, shift = At.Shift.AFTER))
-    private static void reid$addPickupDropStat(CallbackInfo ci, @Local Item item) {
-        OBJECTS_PICKED_UP_STATS_MAP.put(item, OBJECTS_PICKED_UP_STATS[0]);
-        OBJECTS_DROPPED_STATS_MAP.put(item, OBJECTS_DROPPED_STATS[0]);
-        OBJECTS_PICKED_UP_STATS[0] = null;
-        OBJECTS_DROPPED_STATS[0] = null;
+    @Redirect(method = "initPickedUpAndDroppedStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", ordinal = 0))
+    private static StatBase reid$addPickupStat(StatCrafting instance, @Local Item item) {
+        // Don't actually redirect
+        instance.registerStat();
+        OBJECTS_PICKED_UP_STATS_MAP.put(item, instance);
+        return instance;
+    }
+
+    /**
+     * @reason Add to OBJECTS_DROPPED_STATS_MAP
+     */
+    @Redirect(method = "initPickedUpAndDroppedStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatCrafting;registerStat()Lnet/minecraft/stats/StatBase;", ordinal = 1))
+    private static StatBase reid$addDropStat(StatCrafting instance, @Local Item item) {
+        // Don't actually redirect
+        instance.registerStat();
+        OBJECTS_DROPPED_STATS_MAP.put(item, instance);
+        return instance;
     }
 
     @Redirect(method = "initPickedUpAndDroppedStats", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatList;replaceAllSimilarBlocks([Lnet/minecraft/stats/StatBase;Z)V", remap = false))
@@ -345,6 +348,16 @@ public final class MixinStatList {
         replaceAllSimilarBlocksItem(OBJECT_BREAK_STATS_MAP);
     }
     // endregion
+
+    @Inject(method = "reinit", at = @At(value = "HEAD"), remap = false)
+    private static void reid$clearArrays(CallbackInfo ci) {
+        BLOCKS_STATS[0] = null;
+        OBJECT_USE_STATS[0] = null;
+        CRAFTS_STATS[0] = null;
+        OBJECT_BREAK_STATS[0] = null;
+        OBJECTS_PICKED_UP_STATS[0] = null;
+        OBJECTS_DROPPED_STATS[0] = null;
+    }
 
     @Redirect(method = "reinit", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Lists;newArrayList(Ljava/lang/Iterable;)Ljava/util/ArrayList;"), remap = false)
     private static ArrayList<StatBase> reid$getUnknownStats(Iterable<StatBase> allStats) {
