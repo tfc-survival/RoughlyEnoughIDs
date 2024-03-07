@@ -9,60 +9,76 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-
 import org.dimdev.jeid.biome.BiomeError;
 import org.dimdev.jeid.ducks.modsupport.cubicchunks.INewCube;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@Pseudo
-@Mixin(Cube.class)
+@Mixin(value = Cube.class, remap = false)
 @Implements(@Interface(iface = INewCube.class, prefix = "int$"))
 public abstract class MixinCube {
-    @Shadow @Final @Nonnull private World world;
+    private static final byte ERROR_BIOME_ID = (byte) Biome.REGISTRY.getIDForObject(BiomeError.getInstance());
+    @Shadow
+    @Final
+    @Nonnull
+    private World world;
+    @Unique
+    @Nullable
+    private int[] intBiomeArray;
 
+    @SuppressWarnings("deprecation")
     @Shadow
     public abstract <T extends Chunk & IColumn> T getColumn();
 
-
-    private static final byte errorBiomeID = (byte) Biome.REGISTRY.getIDForObject(BiomeError.getInstance());
-    @Nullable private int[] blockBiomeArray;
-
-    @Overwrite(remap = false)
+    /**
+     * @author Exsolutus
+     * @reason Support int biome ids
+     */
+    @Overwrite
     public Biome getBiome(BlockPos pos) {
-        if (this.blockBiomeArray == null)
+        if (this.intBiomeArray == null) {
             return this.getColumn().getBiome(pos, world.getBiomeProvider());
-
+        }
         int biomeX = Coords.blockToLocalBiome3d(pos.getX());
         int biomeY = Coords.blockToLocalBiome3d(pos.getY());
         int biomeZ = Coords.blockToLocalBiome3d(pos.getZ());
-        int biomeId = this.blockBiomeArray[AddressTools.getBiomeAddress3d(biomeX, biomeY, biomeZ)];
+        int biomeId = this.intBiomeArray[AddressTools.getBiomeAddress3d(biomeX, biomeY, biomeZ)];
         return Biome.getBiome(biomeId);
     }
 
-    @Overwrite(remap = false)
+    /**
+     * @author Exsolutus
+     * @reason Support int biome ids
+     */
+    @Overwrite
     public void setBiome(int localBiomeX, int localBiomeY, int localBiomeZ, Biome biome) {
-        if (this.blockBiomeArray == null)
-            this.blockBiomeArray = new int[64];
+        if (this.intBiomeArray == null)
+            this.intBiomeArray = new int[64];
 
-        this.blockBiomeArray[AddressTools.getBiomeAddress3d(localBiomeX, localBiomeY, localBiomeZ)] = Biome.REGISTRY.getIDForObject(biome);
+        this.intBiomeArray[AddressTools.getBiomeAddress3d(localBiomeX, localBiomeY, localBiomeZ)] = Biome.REGISTRY.getIDForObject(biome);
     }
 
     @Nullable
     public int[] int$getBiomeArray() {
-        return this.blockBiomeArray;
+        return this.intBiomeArray;
     }
 
     public void int$setBiomeArray(int[] biomeArray) {
-        if (this.blockBiomeArray == null)
-            this.blockBiomeArray = biomeArray;
+        if (this.intBiomeArray == null)
+            this.intBiomeArray = biomeArray;
 
-        if (this.blockBiomeArray.length != biomeArray.length) {
-            CubicChunks.LOGGER.warn("Could not set level cube biomes, array length is {} instead of {}", biomeArray.length, this.blockBiomeArray.length);
+        if (this.intBiomeArray.length != biomeArray.length) {
+            CubicChunks.LOGGER.warn("Could not set level cube biomes, array length is {} instead of {}", biomeArray.length, this.intBiomeArray.length);
         } else {
-            System.arraycopy(biomeArray, 0, this.blockBiomeArray, 0, this.blockBiomeArray.length);
+            System.arraycopy(biomeArray, 0, this.intBiomeArray, 0, this.intBiomeArray.length);
         }
     }
 }

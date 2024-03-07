@@ -27,6 +27,7 @@ public class JEID {
         + "after:bookshelf;"
         + "after:compactmachines3;"
         + "after:creepingnether;"
+        + "after:cubicchunks@[1.12.2-0.0.1271.0-SNAPSHOT,);"
         + "after:cyclopscore;"
         + "after:extrautils2;"
         + "after:gaiadimension;"
