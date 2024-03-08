@@ -4,6 +4,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.dimdev.jeid.JEID;
+import org.dimdev.jeid.config.ConfigHandler;
 
 public class DebugBiome extends DebugBase<Biome> {
     public DebugBiome(int numInstances, IForgeRegistry<Biome> registry) {
@@ -20,6 +21,6 @@ public class DebugBiome extends DebugBase<Biome> {
 
     @Override
     public boolean shouldDebug() {
-        return false;
+        return ConfigHandler.DEBUG.reidDebugBiomesToggle;
     }
 }

@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.dimdev.jeid.JEID;
+import org.dimdev.jeid.config.ConfigHandler;
 
 public class DebugBlock extends DebugBase<Block> {
     // For easy registration of ItemBlock
@@ -31,6 +32,6 @@ public class DebugBlock extends DebugBase<Block> {
 
     @Override
     public boolean shouldDebug() {
-        return false;
+        return ConfigHandler.DEBUG.reidDebugBlocksToggle;
     }
 }

@@ -5,6 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.dimdev.jeid.JEID;
+import org.dimdev.jeid.config.ConfigHandler;
 
 public class DebugItem extends DebugBase<Item> {
     public DebugItem(int numInstances, IForgeRegistry<Item> registry) {
@@ -21,6 +22,6 @@ public class DebugItem extends DebugBase<Item> {
 
     @Override
     public boolean shouldDebug() {
-        return false;
+        return ConfigHandler.DEBUG.reidDebugItemsToggle;
     }
 }

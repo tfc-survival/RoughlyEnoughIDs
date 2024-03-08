@@ -7,6 +7,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.dimdev.jeid.JEID;
+import org.dimdev.jeid.config.ConfigHandler;
 
 import java.util.Random;
 
@@ -31,7 +32,7 @@ public class DebugPotion extends DebugBase<Potion> {
 
     @Override
     public boolean shouldDebug() {
-        return false;
+        return ConfigHandler.DEBUG.reidDebugPotionsToggle;
     }
 
     private static class PotionTest extends Potion {

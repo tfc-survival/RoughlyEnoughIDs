@@ -6,6 +6,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.dimdev.jeid.JEID;
+import org.dimdev.jeid.config.ConfigHandler;
 
 public class DebugEnchant extends DebugBase<Enchantment> {
     public DebugEnchant(int numInstances, IForgeRegistry<Enchantment> registry) {
@@ -21,7 +22,7 @@ public class DebugEnchant extends DebugBase<Enchantment> {
 
     @Override
     public boolean shouldDebug() {
-        return false;
+        return ConfigHandler.DEBUG.reidDebugEnchantsToggle;
     }
 
     private static class EnchantTest extends Enchantment {

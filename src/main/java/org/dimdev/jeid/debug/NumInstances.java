@@ -1,16 +1,18 @@
 package org.dimdev.jeid.debug;
 
+import org.dimdev.jeid.config.ConfigHandler;
+
 /**
  * Enum to specify number of instances of each type to register.
  * <p>
  * Edit values here to increase/decrease number of instances registered.
  */
 public enum NumInstances {
-    BLOCK(5000),
-    ITEM(40000),
-    BIOME(300),
-    POTION(300),
-    ENCHANT(Short.MAX_VALUE);
+    BIOME(ConfigHandler.DEBUG.reidDebugBiomesAmt),
+    BLOCK(ConfigHandler.DEBUG.reidDebugBlocksAmt),
+    ENCHANT(ConfigHandler.DEBUG.reidDebugEnchantsAmt),
+    ITEM(ConfigHandler.DEBUG.reidDebugItemsAmt),
+    POTION(ConfigHandler.DEBUG.reidDebugPotionsAmt);
 
     public final int value;
 
