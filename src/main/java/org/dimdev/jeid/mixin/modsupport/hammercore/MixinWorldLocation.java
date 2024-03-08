@@ -9,7 +9,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.dimdev.jeid.ducks.INewChunk;
-import org.dimdev.jeid.network.BiomeChangeMessage;
 import org.dimdev.jeid.network.MessageManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,9 +30,6 @@ public class MixinWorldLocation {
 
     @Redirect(method = "setBiome", at = @At(value = "INVOKE", target = "Lcom/zeitheron/hammercore/net/HCNet;sendToAllAround(Lcom/zeitheron/hammercore/net/IPacket;Lnet/minecraftforge/fml/common/network/NetworkRegistry$TargetPoint;)V"))
     private void reid$sendBiomeMessage(HCNet instance, IPacket packet, NetworkRegistry.TargetPoint point, Biome biome) {
-        MessageManager.CHANNEL.sendToAllAround(
-                new BiomeChangeMessage(pos.getX(), pos.getZ(), Biome.getIdForBiome(biome)),
-                new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), 128.0D, pos.getZ(), 128.0D)
-        );
+        MessageManager.sendClientsBiomeChange(world, pos, Biome.getIdForBiome(biome));
     }
 }

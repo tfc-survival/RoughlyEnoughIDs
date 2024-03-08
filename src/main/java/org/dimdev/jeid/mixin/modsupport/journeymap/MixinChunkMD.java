@@ -1,6 +1,5 @@
 package org.dimdev.jeid.mixin.modsupport.journeymap;
 
-import com.rwtema.extrautils2.biome.BiomeManip;
 import journeymap.client.model.ChunkMD;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
@@ -18,7 +17,8 @@ public abstract class MixinChunkMD {
     public abstract Chunk getChunk();
 
     /**
-     * @reason Support int biome ids and rewrite {@link BiomeManip#setBiome} because ModifyVariable can't find target
+     * @author Runemoro, ZombieHDGaming
+     * @reason Support int biome ids and rewrite because ModifyVariable can't find target
      */
     @Inject(method = "getBiome", at = @At(value = "HEAD"), cancellable = true)
     private void reid$rewriteGetBiome(BlockPos pos, CallbackInfoReturnable<Biome> cir) {
@@ -32,6 +32,7 @@ public abstract class MixinChunkMD {
                 cir.setReturnValue(null);
             }
             biomeId = Biome.getIdForBiome(biome);
+            // Client-side only
             biomeArray[(pos.getZ() & 0xF) << 4 | pos.getX() & 0xF] = biomeId;
         }
 

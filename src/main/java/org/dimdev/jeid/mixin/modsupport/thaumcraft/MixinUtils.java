@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.dimdev.jeid.ducks.INewChunk;
-import org.dimdev.jeid.network.BiomeChangeMessage;
 import org.dimdev.jeid.network.MessageManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,7 +16,6 @@ import thaumcraft.common.lib.utils.Utils;
 
 @Mixin(value = Utils.class, remap = false)
 public class MixinUtils {
-    // TODO: Check all other getIntBiomeArray to make sure they markDirty and send packet
     @Redirect(method = "setBiomeAt(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/biome/Biome;Z)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;setBiomeArray([B)V", remap = true))
     private static void reid$toIntBiomeArray(Chunk instance, byte[] biomeArray, World world, BlockPos pos, Biome biome) {
         int[] array = ((INewChunk) instance).getIntBiomeArray();
@@ -27,9 +25,6 @@ public class MixinUtils {
 
     @Redirect(method = "setBiomeAt(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/biome/Biome;Z)V", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/common/network/simpleimpl/SimpleNetworkWrapper;sendToAllAround(Lnet/minecraftforge/fml/common/network/simpleimpl/IMessage;Lnet/minecraftforge/fml/common/network/NetworkRegistry$TargetPoint;)V"))
     private static void reid$sendBiomeMessage(SimpleNetworkWrapper instance, IMessage message, NetworkRegistry.TargetPoint point, World world, BlockPos pos, Biome biome) {
-        MessageManager.CHANNEL.sendToAllAround(
-                new BiomeChangeMessage(pos.getX(), pos.getZ(), Biome.getIdForBiome(biome)),
-                new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), 128.0D, pos.getZ(), 128.0D)
-        );
+        MessageManager.sendClientsBiomeChange(world, pos, Biome.getIdForBiome(biome));
     }
 }

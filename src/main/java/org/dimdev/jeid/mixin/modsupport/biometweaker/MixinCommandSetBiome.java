@@ -9,11 +9,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.dimdev.jeid.JEID;
 import org.dimdev.jeid.ducks.INewChunk;
-import org.dimdev.jeid.network.BiomeArrayMessage;
-import org.dimdev.jeid.network.BiomeChangeMessage;
 import org.dimdev.jeid.network.MessageManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,8 +27,9 @@ public class MixinCommandSetBiome {
                                            @Local BlockPos coord, @Local World world, @Local(ordinal = 0) int id,
                                            @Local(ordinal = 2) int x, @Local(ordinal = 3) int z, @Local Chunk chunk) {
         JEID.LOGGER.info("setting biome at {}, {}", x, z);
+        // Method calls markDirty()
         ((INewChunk) chunk).getIntBiomeArray()[(z & 0xF) << 4 | x & 0xF] = id;
-        MessageManager.CHANNEL.sendToAllTracking(new BiomeChangeMessage(x, z, id), new NetworkRegistry.TargetPoint(world.provider.getDimension(), coord.getX(), coord.getY(), coord.getZ(), 256));
+        MessageManager.sendClientsBiomeChange(world, new BlockPos(x, coord.getY(), z), id);
     }
 
     @Inject(method = "execute", at = @At(value = "INVOKE", target = "Ljava/util/Arrays;fill([BB)V", remap = false))
@@ -45,7 +43,8 @@ public class MixinCommandSetBiome {
     private void reid$setBiomeArray(Chunk instance, byte[] biomeArray,
                                     @Local BlockPos coord, @Local World world, @Local(ordinal = 4) int x,
                                     @Local(ordinal = 5) int z, @Share("intBiomeArray") LocalRef<int[]> intBiomeArray) {
+        // Method calls markDirty()
         ((INewChunk) world.getChunk(x, z)).setIntBiomeArray(Arrays.copyOf(intBiomeArray.get(), intBiomeArray.get().length));
-        MessageManager.CHANNEL.sendToAllTracking(new BiomeArrayMessage(x, z, Arrays.copyOf(intBiomeArray.get(), intBiomeArray.get().length)), new NetworkRegistry.TargetPoint(world.provider.getDimension(), coord.getX(), coord.getY(), coord.getZ(), 256));
+        MessageManager.sendClientsBiomeArray(world, new BlockPos(x, coord.getY(), z), Arrays.copyOf(intBiomeArray.get(), intBiomeArray.get().length));
     }
 }

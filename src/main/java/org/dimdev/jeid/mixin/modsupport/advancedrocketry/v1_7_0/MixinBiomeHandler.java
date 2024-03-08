@@ -16,6 +16,7 @@ import zmaster587.advancedRocketry.util.BiomeHandler;
 /**
  * Mixin for Advanced Rocketry 1.7.0
  */
+@SuppressWarnings("target")
 @Mixin(value = BiomeHandler.class, remap = false)
 public class MixinBiomeHandler {
     @Dynamic("Only present with AR 1.7.0")
@@ -28,6 +29,7 @@ public class MixinBiomeHandler {
     private static void reid$toIntBiomeArray1_7_0(World world, int biomeId, BlockPos pos, CallbackInfo ci, @Local Chunk chunk) {
         ((INewChunk) chunk).getIntBiomeArray()[(pos.getZ() & 0xF) << 4 | pos.getX() & 0xF] = biomeId;
         chunk.markDirty();
+        // Method sends packet
     }
 
     @Dynamic("Overload for AR 1.7.0")

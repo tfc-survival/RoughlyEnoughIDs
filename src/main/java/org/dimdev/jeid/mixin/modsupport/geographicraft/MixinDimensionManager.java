@@ -14,7 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value = DimensionManager.class, remap = false)
 public class MixinDimensionManager {
     /**
-     * @reason Support int biome ids and rewrite {@link BiomeManip#setBiome} because of var types
+     * @author Runemoro
+     * @reason Support int biome ids and rewrite because of var types
      */
     @Inject(method = "hasOnlySea", at = @At(value = "HEAD"), cancellable = true)
     private void reid$rewriteHasOnlySea(Chunk tested, CallbackInfoReturnable<Boolean> cir) {

@@ -17,6 +17,7 @@ import zmaster587.advancedRocketry.util.BiomeHandler;
  * Mixin for Advanced Rocketry 2.0.0+
  * Biome changer remote is broken in this version, so this doesn't do much.
  */
+@SuppressWarnings("target")
 @Mixin(value = BiomeHandler.class, remap = false)
 public class MixinBiomeHandler {
     @Dynamic("Use int biome array for AR 2.0.0")
@@ -24,5 +25,6 @@ public class MixinBiomeHandler {
     private static void reid$toIntBiomeArray2_0_0(World world, Biome biomeId, BlockPos pos, CallbackInfo ci, @Local Chunk chunk) {
         ((INewChunk) chunk).getIntBiomeArray()[(pos.getZ() & 0xF) << 4 | pos.getX() & 0xF] = Biome.getIdForBiome(biomeId);
         chunk.markDirty();
+        // Method sends packet
     }
 }

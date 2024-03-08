@@ -11,10 +11,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(BiomeUtil.class)
+@Mixin(value = BiomeUtil.class, remap = false)
 public class MixinBiomeUtil {
-    @Inject(method = "updateBiome(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;IZ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;setModified(Z)V", remap = true), remap = false)
+    @Inject(method = "updateBiome(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;IZ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;setModified(Z)V", remap = true))
     private static void reid$toIntBiomeArray(World worldIn, BlockPos pos, int b, boolean batched, CallbackInfo ci, @Local Chunk chunk) {
+        // Method calls setModified(true), same as markDirty()
         ((INewChunk) chunk).getIntBiomeArray()[(pos.getZ() & 0xF) << 4 | pos.getX() & 0xF] = b;
+        // Method sends packet
     }
 }

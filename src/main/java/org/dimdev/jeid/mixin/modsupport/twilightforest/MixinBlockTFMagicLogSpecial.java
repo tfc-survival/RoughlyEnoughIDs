@@ -5,10 +5,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import org.dimdev.jeid.ducks.INewChunk;
-import org.dimdev.jeid.network.BiomeChangeMessage;
 import org.dimdev.jeid.network.MessageManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,8 +21,7 @@ public class MixinBlockTFMagicLogSpecial {
      */
     @Inject(method = "sendChangedBiome", at = @At(value = "HEAD"), cancellable = true)
     private void reid$rewriteSendChangedBiome(World world, BlockPos pos, Biome biome, CallbackInfo ci) {
-        IMessage message = new BiomeChangeMessage(pos.getX(), pos.getZ(), Biome.getIdForBiome(biome));
-        MessageManager.CHANNEL.sendToAllAround(message, new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), 128.0D, pos.getZ(), 128.0D));
+        MessageManager.sendClientsBiomeChange(world, pos, Biome.getIdForBiome(biome));
         ci.cancel();
     }
 
