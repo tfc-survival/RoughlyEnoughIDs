@@ -18,18 +18,22 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 
 @Mixin(value = Cube.class, remap = false)
 @Implements(@Interface(iface = INewCube.class, prefix = "int$"))
 public abstract class MixinCube {
-    private static final byte ERROR_BIOME_ID = (byte) Biome.REGISTRY.getIDForObject(BiomeError.getInstance());
     @Shadow
     @Final
-    @Nonnull
     private World world;
+    @Unique
+    private static final byte ERROR_BIOME_ID = (byte) Biome.REGISTRY.getIDForObject(BiomeError.getInstance());
     @Unique
     @Nullable
     private int[] intBiomeArray;
@@ -52,6 +56,13 @@ public abstract class MixinCube {
         int biomeZ = Coords.blockToLocalBiome3d(pos.getZ());
         int biomeId = this.intBiomeArray[AddressTools.getBiomeAddress3d(biomeX, biomeY, biomeZ)];
         return Biome.getBiome(biomeId);
+    }
+
+    @Inject(method = "getBiomeArray", at = @At(value = "RETURN"), cancellable = true)
+    private void reid$returnErrorBiomeArray(CallbackInfoReturnable<byte[]> cir) {
+        byte[] arr = new byte[256];
+        Arrays.fill(arr, ERROR_BIOME_ID);
+        cir.setReturnValue(arr);
     }
 
     /**

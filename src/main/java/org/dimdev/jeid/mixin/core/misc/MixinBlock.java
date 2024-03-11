@@ -40,7 +40,7 @@ public class MixinBlock {
      * an ID larger than 4096 stored in JEID format (state ID is larger than 65536)
      */
     @ModifyArg(method = "getStateById", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getBlockById(I)Lnet/minecraft/block/Block;"), index = 0)
-    private static int reid$useJEIDId(int vanillaId, @Local(ordinal = 0) int stateId) {
+    private static int reid$useJEIDId(int vanillaId, @Local(ordinal = 0, argsOnly = true) int stateId) {
         if ((stateId & 0xffff0000) == 0) {
             return vanillaId;
         } else {
@@ -52,7 +52,7 @@ public class MixinBlock {
      * @reason See {@link #reid$useJEIDId}
      */
     @ModifyArg(method = "getStateById", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getStateFromMeta(I)Lnet/minecraft/block/state/IBlockState;"), index = 0)
-    private static int reid$useJEIDMeta(int vanillaMeta, @Local(ordinal = 0) int stateId) {
+    private static int reid$useJEIDMeta(int vanillaMeta, @Local(ordinal = 0, argsOnly = true) int stateId) {
         if ((stateId & 0xffff0000) == 0) {
             return vanillaMeta;
         } else {

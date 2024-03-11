@@ -43,7 +43,6 @@ public class MixinChunk implements INewChunk {
         System.arraycopy(intBiomeArray, 0, this.intBiomeArray, 0, this.intBiomeArray.length);
     }
 
-    @SuppressWarnings("unused")
     @Inject(method = "getBiomeArray", at = @At(value = "RETURN"), cancellable = true)
     private void reid$returnErrorBiomeArray(CallbackInfoReturnable<byte[]> cir) {
         byte[] arr = new byte[256];

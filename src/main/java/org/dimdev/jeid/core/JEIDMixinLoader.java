@@ -9,7 +9,7 @@ import java.util.List;
 
 public class JEIDMixinLoader implements ILateMixinLoader {
     public List<String> getMixinConfigs() {
-        List<String> configs = new ArrayList<String>();
+        List<String> configs = new ArrayList<>();
 
         if (JEIDLoadingPlugin.isClient) {
             if (Loader.isModLoaded("advancedrocketry")) {

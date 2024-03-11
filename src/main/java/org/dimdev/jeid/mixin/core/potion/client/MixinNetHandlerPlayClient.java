@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 public class MixinNetHandlerPlayClient {
     @Final
     @ModifyArg(method = "handleEntityEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/potion/Potion;getPotionById(I)Lnet/minecraft/potion/Potion;"), index = 0)
-    private int reid$getIntEffectId(int potionID, @Local SPacketEntityEffect packetIn) {
+    private int reid$getIntEffectId(int potionID, @Local(argsOnly = true) SPacketEntityEffect packetIn) {
         return ((IStoredEffectInt) packetIn).getEffectInt();
     }
 }

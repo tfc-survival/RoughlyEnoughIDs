@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ChunkPrimer.class)
 public class MixinChunkPrimer {
     @Unique
-    private int[] intData = new int[65536];
+    private final int[] intData = new int[65536];
 
     @Shadow
     private static int getBlockIndex(int x, int y, int z) {
