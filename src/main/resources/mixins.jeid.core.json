@@ -3,31 +3,36 @@
   "required": true,
   "refmap": "mixins.jeid.refmap.json",
   "target": "@env(DEFAULT)",
-  "minVersion": "0.6",
+  "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinAnvilChunkLoader",
-    "MixinBlock",
-    "MixinBlockStateContainer",
-    "MixinChunk",
-    "MixinChunkPrimer",
-    "MixinChunkProviderServer",
-    "MixinEnchantmentHelper",
-    "MixinGameData",
-    "MixinGenLayerVoronoiZoom",
-    "MixinItemEnchantedBook",
-    "MixinPacketBuffer",
-    "MixinPacketUtil",
-    "MixinSPacketChunkData",
-    "MixinStatList",
-    "MixinWorldInfo"
+    "enchant.MixinEnchantmentHelper",
+    "enchant.MixinItemEnchantedBook",
+    "misc.MixinBlock",
+    "misc.MixinGameData",
+    "misc.MixinStatList",
+    "network.MixinPacketBuffer",
+    "network.MixinPacketUtil",
+    "network.MixinSPacketChunkData",
+    "potion.MixinSPacketEntityEffect",
+    "potion.MixinSPacketRemoveEntityEffect",
+    "world.MixinAnvilChunkLoader",
+    "world.MixinBlockStateContainer",
+    "world.MixinChunk",
+    "world.MixinChunkPrimer",
+    "world.MixinChunkProviderServer",
+    "world.MixinGenLayerVoronoiZoom",
+    "world.MixinWorldInfo"
   ],
   "client": [
-    "client.MixinChunk",
-    "client.MixinRenderGlobal",
-    "client.MixinWorldSummary"
+    "enchant.client.MixinItemEnchantedBook",
+    "misc.client.MixinRenderGlobal",
+    "potion.client.MixinNetHandlerPlayClient",
+    "world.client.MixinChunk",
+    "world.client.MixinWorldSummary"
   ],
   "injectors": {
-    "maxShiftBy": 10
+    "maxShiftBy": 10,
+    "require": 1
   }
 }

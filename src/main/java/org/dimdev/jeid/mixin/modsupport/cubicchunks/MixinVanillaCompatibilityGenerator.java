@@ -6,23 +6,28 @@ import io.github.opencubicchunks.cubicchunks.core.worldgen.generator.vanilla.Van
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import org.dimdev.jeid.INewChunk;
+import org.dimdev.jeid.ducks.INewChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 
 import javax.annotation.Nonnull;
 
-@Pseudo
-@Mixin(VanillaCompatibilityGenerator.class)
+@Mixin(value = VanillaCompatibilityGenerator.class, remap = false)
 public class MixinVanillaCompatibilityGenerator {
-    @Shadow private Biome[] biomes;
-    @Shadow @Final @Nonnull private World world;
+    @Shadow
+    private Biome[] biomes;
+    @Shadow
+    @Final
+    @Nonnull
+    private World world;
 
-    
-    @Overwrite(remap = false)
+    /**
+     * @author Exsolutus
+     * @reason Support int biome ids
+     */
+    @Overwrite
     public void generateColumn(Chunk column) {
         this.biomes = this.world.getBiomeProvider()
                 .getBiomes(this.biomes,

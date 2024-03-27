@@ -1,14 +1,13 @@
 {
-  "package": "org.dimdev.jeid.mixin.modsupport",
+  "package": "org.dimdev.jeid.mixin.modsupport.worldedit",
   "required": true,
   "refmap": "mixins.jeid.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.6",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "worldedit.MixinBaseBlock"
+    "MixinBaseBlock"
   ],
-  "client": [],
   "injectors": {
     "maxShiftBy": 10
   }

@@ -50,9 +50,6 @@ minecraft {
     
     // Add various JVM arguments here for runtime
     def args = ["-ea:${project.group}"]
-    if (project.use_coremod.toBoolean()) {
-        args << '-Dfml.coreMods.load=' + coremod_plugin_class_name
-    }
     if (project.use_mixins.toBoolean()) {
         args << '-Dmixin.hotSwap=true'
         args << '-Dmixin.checks.interfaces=true'
@@ -65,9 +62,18 @@ minecraft {
     
     // Add any properties you want to swap out for a dynamic value at build time here
     // Any properties here will be added to a class at build time, the name can be configured below
-    // Example:
-    // injectedTags.put('VERSION', project.version)
-    // injectedTags.put('MOD_ID', project.archives_base_name)
+    injectedTags.put('MOD_ID', project.archives_base_name)
+    injectedTags.put('MOD_NAME', project.mod_name)
+    injectedTags.put('VERSION', project.version)
+}
+
+// Don't add coremod arg to runDeobf tasks
+if (project.use_coremod.toBoolean()) {
+    for (runTask in ['runClient', 'runServer']) {
+        tasks.named(runTask).configure {
+            extraJvmArgs.add('-Dfml.coreMods.load=' + coremod_plugin_class_name)
+        }
+    }
 }
 
 // Generate a group.archives_base_name.Tags class
@@ -100,7 +106,7 @@ dependencies {
         implementation 'com.cleanroommc:assetmover:2.5'
     }
     if (project.use_mixins.toBoolean()) {
-        implementation 'zone.rong:mixinbooter:7.1'
+        implementation 'zone.rong:mixinbooter:8.0'
     }
 
     // Example of deobfuscating a dependency
@@ -128,7 +134,10 @@ dependencies {
     compileOnly rfg.deobf( "curse.maven:GeographiCraft-76544:2497541" )
     compileOnly rfg.deobf( "curse.maven:mystcraft-224599:2958490" )
     compileOnly rfg.deobf( "curse.maven:HammerCore-247401:3366814" )
+    // Advanced Rocketry 1.7.0
     compileOnly rfg.deobf( "curse.maven:AdvancedRocketry-236542:3015079" )
+    // Advanced Rocketry 2.0.0
+    // compileOnly rfg.deobf( "curse.maven:AdvancedRocketry-236542:4671856" )
     compileOnly rfg.deobf( "curse.maven:LibVulpes-236541:3434864" )
     compileOnly rfg.deobf( "curse.maven:worldedit-225608:2941712" )
     compileOnly rfg.deobf( "curse.maven:journeymap-32274:2916002" )
@@ -148,6 +157,9 @@ dependencies {
     compileOnly rfg.deobf( "curse.maven:CubicChunks-292243:5135427" )
     compileOnly rfg.deobf( "curse.maven:RTGU-648514:4396319" )
 
+    // implementation "curse.maven:LibVulpes-236541:3801015"
+    // implementation "curse.maven:Baubles-227083:2518667"
+    // implementation "curse.maven:mm-library-368098:3254750"
 }
 
 // Adds Access Transformer files to tasks

@@ -1,38 +1,34 @@
 package org.dimdev.jeid.mixin.modsupport.creepingnether;
 
-import com.cutievirus.creepingnether.Ref;
 import com.cutievirus.creepingnether.entity.CorruptorAbstract;
-import net.minecraft.init.Biomes;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import org.dimdev.jeid.INewChunk;
-import org.dimdev.jeid.network.BiomeChangeMessage;
+import org.dimdev.jeid.ducks.INewChunk;
 import org.dimdev.jeid.network.MessageManager;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Pseudo
-@Mixin(CorruptorAbstract.class)
+@Mixin(value = CorruptorAbstract.class, remap = false)
 public abstract class MixinCorruptorAbstract {
-    @Shadow public abstract Biome getBiome();
+    @Shadow
+    public abstract Biome getBiome();
 
-    @Overwrite(remap = false)
-    public void corruptBiome(World world, BlockPos pos) {
-        if (!world.isBlockLoaded(pos)) return;
-        Biome oldBiome = world.getBiome(pos);
-        if (oldBiome == this.getBiome() || oldBiome != Biomes.HELL && this.getBiome() != Ref.biomeCreepingNether) return;
-        Chunk chunk = world.getChunk(pos);
-        ((INewChunk) chunk).getIntBiomeArray()[(pos.getZ() & 15) << 4 | pos.getX() & 15] = Biome.getIdForBiome(this.getBiome());
-        if (!world.isRemote) {
-            MessageManager.CHANNEL.sendToAllAround(
-                    new BiomeChangeMessage(pos.getX(), pos.getZ(), Biome.getIdForBiome(this.getBiome())),
-                    new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), 128.0D, pos.getZ(), 128.0D)
-            );
-        }
+    @Inject(method = "corruptBiome", at = @At(value = "FIELD", target = "Lnet/minecraft/world/World;isRemote:Z", opcode = Opcodes.GETFIELD, remap = true))
+    private void reid$toIntBiomeArray(World world, BlockPos pos, CallbackInfo ci, @Local Chunk chunk) {
+        ((INewChunk) chunk).getIntBiomeArray()[(pos.getZ() & 15) << 4 | pos.getX() & 15] = Biome.getIdForBiome(getBiome());
+        chunk.markDirty();
+    }
+
+    @Redirect(method = "corruptBiome", at = @At(value = "INVOKE", target = "Lcom/cutievirus/creepingnether/entity/MessageCorruptBiome;sendMessage(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lcom/cutievirus/creepingnether/entity/CorruptorAbstract;)V"))
+    private void reid$sendBiomeMessage(World world, BlockPos pos, CorruptorAbstract corruptor) {
+        MessageManager.sendClientsBiomeChange(world, pos, Biome.getIdForBiome(getBiome()));
     }
 }

@@ -5,10 +5,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@Mixin(BiomeColorMappings.class)
+@Mixin(value = BiomeColorMappings.class, remap = false)
 public class MixinBiomeColorMappings {
-    @ModifyConstant(method = "getColorForBiome", constant = @Constant(intValue = 0xFF), remap = false)
-    private static int getBitMask(int oldValue) {
+    @ModifyConstant(method = "getColorForBiome", constant = @Constant(intValue = 0xFF))
+    private static int reid$getBitMask(int oldValue) {
         return 0xFFFFFFFF;
     }
 }

@@ -1,6 +1,9 @@
 package org.dimdev.jeid;
 
-public interface INewChunk {
-    int[] getIntBiomeArray();
-    void setIntBiomeArray(int[] intBiomeArray);
+/**
+ * Dummy interface to act as passthrough for real INewChunk.
+ * Provided to keep parity with JEID and other mod compat.
+ * @see org.dimdev.jeid.ducks.INewChunk
+ */
+public interface INewChunk extends org.dimdev.jeid.ducks.INewChunk {
 }

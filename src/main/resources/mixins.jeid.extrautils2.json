@@ -1,15 +1,14 @@
 {
-  "package": "org.dimdev.jeid.mixin.modsupport",
+  "package": "org.dimdev.jeid.mixin.modsupport.extrautils2",
   "required": true,
   "refmap": "mixins.jeid.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.6",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "extrautils2.MixinBiomeManip",
-    "extrautils2.MixinWorldProviderSpecialDim"
+    "MixinBiomeManip",
+    "MixinWorldProviderSpecialDim"
   ],
-  "client": [],
   "injectors": {
     "maxShiftBy": 10
   }

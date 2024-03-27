@@ -1,15 +1,14 @@
 {
-  "package": "org.dimdev.jeid.mixin.modsupport",
+  "package": "org.dimdev.jeid.mixin.modsupport.biomesoplenty",
   "required": true,
   "refmap": "mixins.jeid.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.6",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "biomesoplenty.MixinBOPCommand",
-    "biomesoplenty.MixinModBiomes"
+    "MixinBOPCommand",
+    "MixinModBiomes"
   ],
-  "client": [],
   "injectors": {
     "maxShiftBy": 10
   }

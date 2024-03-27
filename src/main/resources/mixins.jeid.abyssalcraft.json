@@ -1,14 +1,11 @@
 {
-  "package": "org.dimdev.jeid.mixin.modsupport",
+  "package": "org.dimdev.jeid.mixin.modsupport.abyssalcraft",
   "required": true,
   "refmap": "mixins.jeid.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.6",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
-    "abyssalcraft.MixinBiomeUtil"
-  ],
-  "client": [],
+  "mixins": ["MixinBiomeUtil"],
   "injectors": {
     "maxShiftBy": 10
   }
