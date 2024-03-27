@@ -153,6 +153,8 @@ dependencies {
     compileOnly rfg.deobf( "curse.maven:Patchouli-306770:3162874" )
     compileOnly rfg.deobf( "curse.maven:bewitchment-285439:3256343" )
     compileOnly rfg.deobf( "curse.maven:compact-machines-224218:2707509")
+    compileOnly rfg.deobf( "curse.maven:moreplanets-261990:5063201" )
+    compileOnly rfg.deobf( "curse.maven:atum2-59621:3116599" )
 
     compileOnly rfg.deobf( "curse.maven:CubicChunks-292243:5135427" )
     compileOnly rfg.deobf( "curse.maven:RTGU-648514:4396319" )
