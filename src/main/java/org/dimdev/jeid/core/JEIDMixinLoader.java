@@ -28,6 +28,9 @@ public class JEIDMixinLoader implements ILateMixinLoader {
                 configs.add("mixins.jeid.advancedrocketry.v1_7_0.json");
             }
         }
+        if (Loader.isModLoaded("atum")) {
+            configs.add("mixins.jeid.atum.json");
+        }
         if (Loader.isModLoaded("biomesoplenty")) {
             configs.add("mixins.jeid.biomesoplenty.json");
         }
@@ -63,6 +66,9 @@ public class JEIDMixinLoader implements ILateMixinLoader {
         }
         if (Loader.isModLoaded("journeymap")) {
             configs.add("mixins.jeid.journeymap.json");
+        }
+        if (Loader.isModLoaded("moreplanets")) {
+            configs.add("mixins.jeid.moreplanets.json");
         }
         if (Loader.isModLoaded("mystcraft")) {
             configs.add("mixins.jeid.mystcraft.json");

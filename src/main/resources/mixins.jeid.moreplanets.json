@@ -1,0 +1,14 @@
+{
+  "package": "org.dimdev.jeid.mixin.modsupport.moreplanets",
+  "required": true,
+  "refmap": "mixins.jeid.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.6",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinGenLayerRiversMix"
+  ],
+  "injectors": {
+    "maxShiftBy": 10
+  }
+}
