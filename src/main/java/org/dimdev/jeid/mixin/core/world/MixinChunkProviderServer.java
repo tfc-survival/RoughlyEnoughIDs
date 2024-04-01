@@ -26,7 +26,8 @@ public class MixinChunkProviderServer {
     public WorldServer world;
 
     /**
-     * @reason Return an empty biome byte array if the chunk is using an int biome array.
+     * @reason Initialize biome array after any calls to {@link net.minecraft.world.gen.IChunkGenerator#generateChunk}.
+     * This guarantees the correct biomes even for modded chunk generators.
      */
     @Inject(method = "provideChunk", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/gen/IChunkGenerator;generateChunk(II)Lnet/minecraft/world/chunk/Chunk;"))
     private void reid$initializeBiomeArray(int x, int z, CallbackInfoReturnable<Chunk> cir, @Local Chunk chunk) {

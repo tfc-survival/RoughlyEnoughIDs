@@ -10,7 +10,9 @@ import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -50,11 +52,20 @@ public class MixinChunk implements INewChunk {
         cir.setReturnValue(arr);
     }
 
-    // TODO: might want to change getBiome a bit - see issue #14
     @Dynamic("Read biome id from int biome array to int k")
     @ModifyVariable(method = "getBiome", at = @At(value = "STORE", ordinal = 0), name = "k")
     private int reid$fromIntBiomeArray(int original, @Local(name = "i") int i, @Local(name = "j") int j) {
         return this.intBiomeArray[j << 4 | i];
+    }
+
+    /**
+     * Compatibility for mods that don't initialize the chunk's biome array on generation (e.g. Chunk-Pregenerator)
+     *
+     * @reason Use intBiomeArray's default value.
+     */
+    @ModifyConstant(method = "getBiome", constant = @Constant(intValue = 255, ordinal = 1))
+    private int reid$modifyDefaultId(int original) {
+        return -1;
     }
 
     @Inject(method = "getBiome", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/biome/Biome;getIdForBiome(Lnet/minecraft/world/biome/Biome;)I"))
