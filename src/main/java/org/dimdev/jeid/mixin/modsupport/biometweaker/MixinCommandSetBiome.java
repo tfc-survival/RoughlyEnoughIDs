@@ -41,10 +41,12 @@ public class MixinCommandSetBiome {
 
     @Redirect(method = "execute", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;setBiomeArray([B)V"))
     private void reid$setBiomeArray(Chunk instance, byte[] biomeArray,
-                                    @Local BlockPos coord, @Local World world, @Local(ordinal = 4) int x,
-                                    @Local(ordinal = 5) int z, @Share("intBiomeArray") LocalRef<int[]> intBiomeArray) {
+                                    @Local BlockPos coord, @Local World world, @Local(ordinal = 4) int chunkX,
+                                    @Local(ordinal = 5) int chunkZ, @Share("intBiomeArray") LocalRef<int[]> intBiomeArray) {
         // Method calls markDirty()
-        ((INewChunk) world.getChunk(x, z)).setIntBiomeArray(Arrays.copyOf(intBiomeArray.get(), intBiomeArray.get().length));
-        MessageManager.sendClientsBiomeArray(world, new BlockPos(x, coord.getY(), z), Arrays.copyOf(intBiomeArray.get(), intBiomeArray.get().length));
+        int posX = chunkX << 4;
+        int posZ = chunkZ << 4;
+        ((INewChunk) world.getChunk(chunkX, chunkZ)).setIntBiomeArray(Arrays.copyOf(intBiomeArray.get(), intBiomeArray.get().length));
+        MessageManager.sendClientsBiomeArray(world, new BlockPos(posX, coord.getY(), posZ), Arrays.copyOf(intBiomeArray.get(), intBiomeArray.get().length));
     }
 }
