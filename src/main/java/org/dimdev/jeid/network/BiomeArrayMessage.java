@@ -47,7 +47,7 @@ public class BiomeArrayMessage implements IMessage {
                 WorldClient world = Minecraft.getMinecraft().world;
                 Chunk chunk = world.getChunk(message.chunkX, message.chunkZ);
                 ((INewChunk) chunk).setIntBiomeArray(message.biomeArray);
-                world.markBlockRangeForRenderUpdate(new BlockPos(chunk.getPos().getXStart(), 0, chunk.getPos().getZStart()), new BlockPos(chunk.getPos().getXEnd(), 0, chunk.getPos().getZEnd()));
+                world.markBlockRangeForRenderUpdate(new BlockPos(chunk.getPos().getXStart(), 0, chunk.getPos().getZStart()), new BlockPos(chunk.getPos().getXEnd(), world.getHeight(), chunk.getPos().getZEnd()));
             });
             return null;
         }

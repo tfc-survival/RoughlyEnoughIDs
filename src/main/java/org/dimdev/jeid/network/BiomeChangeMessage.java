@@ -47,7 +47,7 @@ public class BiomeChangeMessage implements IMessage {
                 WorldClient world = Minecraft.getMinecraft().world;
                 Chunk chunk = world.getChunk(new BlockPos(message.x, 0, message.z));
                 ((INewChunk) chunk).getIntBiomeArray()[(message.z & 15) << 4 | message.x & 15] = message.biomeId;
-                world.markBlockRangeForRenderUpdate(new BlockPos(message.x, 0, message.z), new BlockPos(message.x, 0, message.z));
+                world.markBlockRangeForRenderUpdate(new BlockPos(message.x, 0, message.z), new BlockPos(message.x, world.getHeight(), message.z));
             });
             return null;
         }

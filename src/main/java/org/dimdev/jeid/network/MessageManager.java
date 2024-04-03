@@ -24,7 +24,7 @@ public class MessageManager {
 
     public static void sendClientsBiomeArray(World world, BlockPos pos, int[] biomeArr) {
         MessageManager.CHANNEL.sendToAllTracking(
-                new BiomeArrayMessage(pos.getX(), pos.getZ(), biomeArr),
+                new BiomeArrayMessage(pos.getX() >> 4, pos.getZ() >> 4, biomeArr), // Expects chunkX/Z
                 new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 0.0D) // Range ignored
         );
     }
