@@ -23,7 +23,7 @@ public class MixinAnvilChunkLoader {
     /**
      * @reason Read palette from NBT for JustEnoughIDs BlockStateContainers.
      */
-    @Inject(method = "readChunkFromNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/storage/ExtendedBlockStorage;<init>(IZ)V", shift = At.Shift.BY, by = 2))
+    @Inject(method = "readChunkFromNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;getByteArray(Ljava/lang/String;)[B", ordinal = 0))
     private void reid$readPaletteNBT(CallbackInfoReturnable<Chunk> cir, @Local(ordinal = 1) NBTTagCompound storageNBT, @Local ExtendedBlockStorage extendedBlockStorage) {
         int[] palette = storageNBT.hasKey("Palette", 11) ? storageNBT.getIntArray("Palette") : null;
         ((INewBlockStateContainer) extendedBlockStorage.getData()).setTemporaryPalette(palette);

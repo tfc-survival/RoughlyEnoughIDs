@@ -25,7 +25,7 @@ public class MixinWorldHelpers {
     /**
      * @reason Sync clients and don't call unnecessary methods - {@link IChunkProvider#provideChunk} and {@link World#markBlockRangeForRenderUpdate}
      */
-    @Inject(method = "setBiome", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;markDirty()V", shift = At.Shift.AFTER, remap = true), cancellable = true)
+    @Inject(method = "setBiome", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getChunkProvider()Lnet/minecraft/world/chunk/IChunkProvider;", remap = true), cancellable = true)
     private static void reid$sendBiomeMessage(World world, BlockPos pos, Biome biome, CallbackInfo ci) {
         if (!world.isRemote) {
             MessageManager.sendClientsBiomeChange(world, pos, Biome.getIdForBiome(biome));
