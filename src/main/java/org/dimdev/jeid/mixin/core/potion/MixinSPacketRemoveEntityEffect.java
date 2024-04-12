@@ -17,6 +17,16 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  */
 @Mixin(value = SPacketRemoveEntityEffect.class)
 public class MixinSPacketRemoveEntityEffect {
+    /**
+     * @reason Disable default id read logic to prevent advancing readerIndex.
+     */
+    @Final
+    @Redirect(method = "readPacketData", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/PacketBuffer;readUnsignedByte()S", ordinal = 0, remap = false))
+    private short reid$defaultReadId(PacketBuffer instance)
+    {
+        return 0;
+    }
+
     @Final
     @ModifyArg(method = "readPacketData", at = @At(value = "INVOKE", target = "Lnet/minecraft/potion/Potion;getPotionById(I)Lnet/minecraft/potion/Potion;"), index = 0)
     private int reid$readIntPotionId(int original, @Local(argsOnly = true) PacketBuffer buf) {
