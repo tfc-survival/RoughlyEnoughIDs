@@ -2,8 +2,7 @@
   "package": "org.dimdev.jeid.mixin.modsupport.cubicchunks",
   "required": true,
   "refmap": "mixins.jeid.refmap.json",
-  "target": "@env(DEFAULT)",
-  "minVersion": "0.6",
+  "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinCube",
@@ -12,8 +11,5 @@
     "MixinIONbtWriter",
     "MixinVanillaCompatibilityGenerator",
     "MixinWorldEncoder"
-  ],
-  "injectors": {
-    "maxShiftBy": 10
-  }
+  ]
 }
