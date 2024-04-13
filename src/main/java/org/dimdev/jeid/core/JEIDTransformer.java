@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 /**
- * Since 2.0.9: Cleaned up obfuscated code; converted most transforms to mixins.
+ * Since 2.1.0: Cleaned up obfuscated code; converted most transforms to mixins.
  * <p>
  * This class was borrowed from Zabi94's MaxPotionIDExtender
  * under MIT License and with full help of Zabi. All credit in this class goes to Zabi
