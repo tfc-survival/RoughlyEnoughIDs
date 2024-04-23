@@ -76,6 +76,9 @@ public class JEIDMixinLoader implements ILateMixinLoader {
         if (Loader.isModLoaded("naturescompass")) {
             configs.add("mixins.jeid.naturescompass.json");
         }
+        if (Loader.isModLoaded("rtg")) {
+            configs.add("mixins.jeid.rtg.json");
+        }
         if (Loader.isModLoaded("thaumcraft")) {
             configs.add("mixins.jeid.thaumcraft.json");
         }

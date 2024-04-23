@@ -1,0 +1,8 @@
+{
+  "package": "org.dimdev.jeid.mixin.modsupport.realisticterraingen",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinChunkGeneratorRTG"
+  ]
+}

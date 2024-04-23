@@ -158,7 +158,8 @@ dependencies {
     compileOnly rfg.deobf( "curse.maven:naturescompass-252848:2893527" )
 
     compileOnly rfg.deobf( "curse.maven:CubicChunks-292243:5135427" )
-    compileOnly rfg.deobf( "curse.maven:RTGU-648514:4396319" )
+    // RTG+ should also work
+    implementation rfg.deobf( "curse.maven:RTGU-648514:4696300" )
 
     // implementation "curse.maven:LibVulpes-236541:3801015"
     // implementation "curse.maven:Baubles-227083:2518667"
