@@ -155,6 +155,7 @@ dependencies {
     compileOnly rfg.deobf( "curse.maven:compact-machines-224218:2707509")
     compileOnly rfg.deobf( "curse.maven:moreplanets-261990:5063201" )
     compileOnly rfg.deobf( "curse.maven:atum2-59621:3116599" )
+    compileOnly rfg.deobf( "curse.maven:naturescompass-252848:2893527" )
 
     compileOnly rfg.deobf( "curse.maven:CubicChunks-292243:5135427" )
     compileOnly rfg.deobf( "curse.maven:RTGU-648514:4396319" )
