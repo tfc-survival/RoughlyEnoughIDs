@@ -1,0 +1,9 @@
+{
+  "package": "org.dimdev.jeid.mixin.modsupport.biomestaff",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinBiomeStaffUtil",
+    "MixinItemBiomeStaff"
+  ]
+}

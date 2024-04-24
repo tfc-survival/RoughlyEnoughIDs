@@ -34,6 +34,9 @@ public class JEIDMixinLoader implements ILateMixinLoader {
         if (Loader.isModLoaded("biomesoplenty")) {
             configs.add("mixins.jeid.biomesoplenty.json");
         }
+        if (Loader.isModLoaded("biomestaff")) {
+            configs.add("mixins.jeid.biomestaff.json");
+        }
         if (Loader.isModLoaded("biometweaker")) {
             configs.add("mixins.jeid.biometweaker.json");
         }

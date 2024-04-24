@@ -29,6 +29,7 @@ public class MixinCommandSetBiome {
         JEID.LOGGER.info("setting biome at {}, {}", x, z);
         // Method calls markDirty()
         ((INewChunk) chunk).getIntBiomeArray()[(z & 0xF) << 4 | x & 0xF] = id;
+        // TODO: send single packet for all changes
         MessageManager.sendClientsBiomeChange(world, new BlockPos(x, coord.getY(), z), id);
     }
 
