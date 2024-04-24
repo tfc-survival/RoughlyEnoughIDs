@@ -62,11 +62,10 @@ public class MixinItemBiomeStaff {
                 if (biomeIdAtPos != toBiomeId) {
                     chunk.markDirty();
                     biomeArray[(iz & 0xF) << 4 | (ix & 0xF)] = toBiomeId;
-                    // TODO: send single packet for all changes
-                    MessageManager.sendClientsBiomeChange(world, new BlockPos(ix, pos.getY(), iz), toBiomeId);
                 }
             }
         }
+        MessageManager.sendClientsBiomeAreaChange(world, pos, rad, toBiomeId);
         cir.setReturnValue(EnumActionResult.SUCCESS);
     }
 }

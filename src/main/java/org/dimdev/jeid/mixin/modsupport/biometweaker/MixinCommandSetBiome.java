@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Arrays;
@@ -29,8 +30,18 @@ public class MixinCommandSetBiome {
         JEID.LOGGER.info("setting biome at {}, {}", x, z);
         // Method calls markDirty()
         ((INewChunk) chunk).getIntBiomeArray()[(z & 0xF) << 4 | x & 0xF] = id;
-        // TODO: send single packet for all changes
-        MessageManager.sendClientsBiomeChange(world, new BlockPos(x, coord.getY(), z), id);
+    }
+
+    @Inject(method = "execute",
+            slice = @Slice(
+                    from = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/BlockPos;getX()I", ordinal = 0),
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/BlockPos;getX()I", ordinal = 2)
+            ),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/command/ICommandSender;sendMessage(Lnet/minecraft/util/text/ITextComponent;)V"))
+    private void reid$sendBiomeAreaChange(MinecraftServer server, ICommandSender sender, String[] args, CallbackInfo ci,
+                                          @Local BlockPos coord, @Local World world, @Local Integer radius,
+                                          @Local(ordinal = 0) int id) {
+        MessageManager.sendClientsBiomeAreaChange(world, coord, radius, id);
     }
 
     @Inject(method = "execute", at = @At(value = "INVOKE", target = "Ljava/util/Arrays;fill([BB)V", remap = false))
@@ -48,6 +59,6 @@ public class MixinCommandSetBiome {
         int posX = chunkX << 4;
         int posZ = chunkZ << 4;
         ((INewChunk) world.getChunk(chunkX, chunkZ)).setIntBiomeArray(Arrays.copyOf(intBiomeArray.get(), intBiomeArray.get().length));
-        MessageManager.sendClientsBiomeArray(world, new BlockPos(posX, coord.getY(), posZ), Arrays.copyOf(intBiomeArray.get(), intBiomeArray.get().length));
+        MessageManager.sendClientsBiomeChunkChange(world, new BlockPos(posX, coord.getY(), posZ), Arrays.copyOf(intBiomeArray.get(), intBiomeArray.get().length));
     }
 }

@@ -13,11 +13,19 @@ public class MessageManager {
     public static void init() {
         CHANNEL.registerMessage(BiomeChunkChangeMessage.Handler.class, BiomeChunkChangeMessage.class, 0, Side.CLIENT);
         CHANNEL.registerMessage(BiomePositionChangeMessage.Handler.class, BiomePositionChangeMessage.class, 1, Side.CLIENT);
+        CHANNEL.registerMessage(BiomeAreaChangeMessage.Handler.class, BiomeAreaChangeMessage.class, 2, Side.CLIENT);
     }
 
     public static void sendClientsBiomePosChange(World world, BlockPos pos, int biomeId) {
         MessageManager.CHANNEL.sendToAllTracking(
                 new BiomePositionChangeMessage(pos.getX(), pos.getZ(), biomeId),
+                new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 0.0D) // Range ignored
+        );
+    }
+
+    public static void sendClientsBiomeAreaChange(World world, BlockPos pos, int radius, int biomeId) {
+        MessageManager.CHANNEL.sendToAllTracking(
+                new BiomeAreaChangeMessage(pos.getX(), pos.getZ(), radius, biomeId),
                 new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 0.0D) // Range ignored
         );
     }
