@@ -23,7 +23,7 @@ public class MixinWorldUtils {
         // Method calls getDirty()
         Arrays.fill(biomeArray, Biome.getIdForBiome(biome));
         if (!world.isRemote) {
-            MessageManager.sendClientsBiomeArray(world, pos, Arrays.copyOf(biomeArray, biomeArray.length));
+            MessageManager.sendClientsBiomeChunkChange(world, pos, Arrays.copyOf(biomeArray, biomeArray.length));
         }
     }
 }

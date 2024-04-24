@@ -30,6 +30,6 @@ public class MixinWorldLocation {
 
     @Redirect(method = "setBiome", at = @At(value = "INVOKE", target = "Lcom/zeitheron/hammercore/net/HCNet;sendToAllAround(Lcom/zeitheron/hammercore/net/IPacket;Lnet/minecraftforge/fml/common/network/NetworkRegistry$TargetPoint;)V"))
     private void reid$sendBiomeMessage(HCNet instance, IPacket packet, NetworkRegistry.TargetPoint point, Biome biome) {
-        MessageManager.sendClientsBiomeChange(world, pos, Biome.getIdForBiome(biome));
+        MessageManager.sendClientsBiomePosChange(world, pos, Biome.getIdForBiome(biome));
     }
 }

@@ -25,6 +25,6 @@ public class MixinUtils {
 
     @Redirect(method = "setBiomeAt(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/biome/Biome;Z)V", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/common/network/simpleimpl/SimpleNetworkWrapper;sendToAllAround(Lnet/minecraftforge/fml/common/network/simpleimpl/IMessage;Lnet/minecraftforge/fml/common/network/NetworkRegistry$TargetPoint;)V"))
     private static void reid$sendBiomeMessage(SimpleNetworkWrapper instance, IMessage message, NetworkRegistry.TargetPoint point, World world, BlockPos pos, Biome biome) {
-        MessageManager.sendClientsBiomeChange(world, pos, Biome.getIdForBiome(biome));
+        MessageManager.sendClientsBiomePosChange(world, pos, Biome.getIdForBiome(biome));
     }
 }

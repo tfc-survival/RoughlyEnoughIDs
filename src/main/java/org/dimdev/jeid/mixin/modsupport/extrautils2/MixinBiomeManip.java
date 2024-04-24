@@ -24,7 +24,7 @@ public class MixinBiomeManip {
         ((INewChunk) chunk).getIntBiomeArray()[(pos.getZ() & 0xF) << 4 | pos.getX() & 0xF] = Biome.getIdForBiome(biome);
         chunk.markDirty();
         if (!world.isRemote) {
-            MessageManager.sendClientsBiomeChange(world, pos, Biome.getIdForBiome(biome));
+            MessageManager.sendClientsBiomePosChange(world, pos, Biome.getIdForBiome(biome));
         }
         ci.cancel();
     }

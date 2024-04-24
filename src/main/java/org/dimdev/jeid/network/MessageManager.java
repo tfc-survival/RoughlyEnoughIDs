@@ -11,21 +11,23 @@ public class MessageManager {
     public static final SimpleNetworkWrapper CHANNEL = NetworkRegistry.INSTANCE.newSimpleChannel(JEID.MODID);
 
     public static void init() {
-        CHANNEL.registerMessage(BiomeArrayMessage.Handler.class, BiomeArrayMessage.class, 0, Side.CLIENT);
-        CHANNEL.registerMessage(BiomeChangeMessage.Handler.class, BiomeChangeMessage.class, 1, Side.CLIENT);
+        CHANNEL.registerMessage(BiomeChunkChangeMessage.Handler.class, BiomeChunkChangeMessage.class, 0, Side.CLIENT);
+        CHANNEL.registerMessage(BiomePositionChangeMessage.Handler.class, BiomePositionChangeMessage.class, 1, Side.CLIENT);
     }
 
-    public static void sendClientsBiomeChange(World world, BlockPos pos, int biomeId) {
+    public static void sendClientsBiomePosChange(World world, BlockPos pos, int biomeId) {
         MessageManager.CHANNEL.sendToAllTracking(
-                new BiomeChangeMessage(pos.getX(), pos.getZ(), biomeId),
+                new BiomePositionChangeMessage(pos.getX(), pos.getZ(), biomeId),
                 new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 0.0D) // Range ignored
         );
     }
 
-    public static void sendClientsBiomeArray(World world, BlockPos pos, int[] biomeArr) {
+    public static void sendClientsBiomeChunkChange(World world, BlockPos pos, int[] biomeArr) {
         MessageManager.CHANNEL.sendToAllTracking(
-                new BiomeArrayMessage(pos.getX() >> 4, pos.getZ() >> 4, biomeArr), // Expects chunkX/Z
+                new BiomeChunkChangeMessage(pos.getX() >> 4, pos.getZ() >> 4, biomeArr), // Expects chunkX/Z
                 new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 0.0D) // Range ignored
         );
     }
+
+
 }
