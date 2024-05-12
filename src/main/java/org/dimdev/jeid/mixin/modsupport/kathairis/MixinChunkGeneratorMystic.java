@@ -1,7 +1,5 @@
 package org.dimdev.jeid.mixin.modsupport.kathairis;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.world.biome.Biome;
 
 import mod.krevik.world.dimension.ChunkGeneratorMystic;
