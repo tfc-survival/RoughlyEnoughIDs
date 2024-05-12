@@ -7,6 +7,7 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.IChunkGenerator;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import org.dimdev.jeid.ducks.ICustomBiomesForGeneration;
 import org.dimdev.jeid.ducks.IModSupportsJEID;
 import org.dimdev.jeid.ducks.INewChunk;
 import org.spongepowered.asm.mixin.Final;
@@ -37,8 +38,14 @@ public class MixinChunkProviderServer {
         if (this.chunkGenerator instanceof IModSupportsJEID) {
             return;
         }
-        Biome[] biomes = world.getBiomeProvider().getBiomes(reusableBiomeList, x * 16, z * 16, 16, 16);
-
+        Biome[] biomes;
+        if (this.chunkGenerator instanceof ICustomBiomesForGeneration) {
+            // Some chunk generators modify the biomes beyond those returned by the BiomeProvider.
+            biomes = ((ICustomBiomesForGeneration) this.chunkGenerator).getBiomesForGeneration();
+        }
+        else {
+            biomes = world.getBiomeProvider().getBiomes(reusableBiomeList, x * 16, z * 16, 16, 16);
+        }
         INewChunk newChunk = (INewChunk) chunk;
         int[] intBiomeArray = newChunk.getIntBiomeArray();
         for (int i = 0; i < intBiomeArray.length; ++i) {

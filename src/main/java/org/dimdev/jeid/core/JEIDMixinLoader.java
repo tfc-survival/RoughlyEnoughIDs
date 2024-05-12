@@ -70,6 +70,9 @@ public class JEIDMixinLoader implements ILateMixinLoader {
         if (Loader.isModLoaded("journeymap")) {
             configs.add("mixins.jeid.journeymap.json");
         }
+        if (Loader.isModLoaded("kathairis")) {
+            configs.add("mixins.jeid.kathairis.json");
+        }
         if (Loader.isModLoaded("moreplanets")) {
             configs.add("mixins.jeid.moreplanets.json");
         }
