@@ -11,14 +11,14 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import org.dimdev.jeid.ducks.INewChunk;
 
-public class BiomeArrayMessage implements IMessage {
+public class BiomeChunkChangeMessage implements IMessage {
     private int chunkX;
     private int chunkZ;
     private int[] biomeArray;
 
-    public BiomeArrayMessage() {}
+    public BiomeChunkChangeMessage() {}
 
-    public BiomeArrayMessage(int chunkX, int chunkZ, int[] biomeArray) {
+    public BiomeChunkChangeMessage(int chunkX, int chunkZ, int[] biomeArray) {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
         this.biomeArray = biomeArray;
@@ -40,9 +40,9 @@ public class BiomeArrayMessage implements IMessage {
         packetBuffer.writeVarIntArray(biomeArray);
     }
 
-    public static class Handler implements IMessageHandler<BiomeArrayMessage, IMessage> {
+    public static class Handler implements IMessageHandler<BiomeChunkChangeMessage, IMessage> {
         @Override
-        public IMessage onMessage(BiomeArrayMessage message, MessageContext ctx) {
+        public IMessage onMessage(BiomeChunkChangeMessage message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 WorldClient world = Minecraft.getMinecraft().world;
                 Chunk chunk = world.getChunk(message.chunkX, message.chunkZ);

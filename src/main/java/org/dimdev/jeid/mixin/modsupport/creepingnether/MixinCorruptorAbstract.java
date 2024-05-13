@@ -29,6 +29,6 @@ public abstract class MixinCorruptorAbstract {
 
     @Redirect(method = "corruptBiome", at = @At(value = "INVOKE", target = "Lcom/cutievirus/creepingnether/entity/MessageCorruptBiome;sendMessage(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lcom/cutievirus/creepingnether/entity/CorruptorAbstract;)V"))
     private void reid$sendBiomeMessage(World world, BlockPos pos, CorruptorAbstract corruptor) {
-        MessageManager.sendClientsBiomeChange(world, pos, Biome.getIdForBiome(getBiome()));
+        MessageManager.sendClientsBiomePosChange(world, pos, Biome.getIdForBiome(getBiome()));
     }
 }

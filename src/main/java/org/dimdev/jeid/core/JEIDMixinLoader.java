@@ -34,6 +34,9 @@ public class JEIDMixinLoader implements ILateMixinLoader {
         if (Loader.isModLoaded("biomesoplenty")) {
             configs.add("mixins.jeid.biomesoplenty.json");
         }
+        if (Loader.isModLoaded("biomestaff")) {
+            configs.add("mixins.jeid.biomestaff.json");
+        }
         if (Loader.isModLoaded("biometweaker")) {
             configs.add("mixins.jeid.biometweaker.json");
         }
@@ -67,11 +70,20 @@ public class JEIDMixinLoader implements ILateMixinLoader {
         if (Loader.isModLoaded("journeymap")) {
             configs.add("mixins.jeid.journeymap.json");
         }
+        if (Loader.isModLoaded("kathairis")) {
+            configs.add("mixins.jeid.kathairis.json");
+        }
         if (Loader.isModLoaded("moreplanets")) {
             configs.add("mixins.jeid.moreplanets.json");
         }
         if (Loader.isModLoaded("mystcraft")) {
             configs.add("mixins.jeid.mystcraft.json");
+        }
+        if (Loader.isModLoaded("naturescompass")) {
+            configs.add("mixins.jeid.naturescompass.json");
+        }
+        if (Loader.isModLoaded("rtg")) {
+            configs.add("mixins.jeid.rtg.json");
         }
         if (Loader.isModLoaded("thaumcraft")) {
             configs.add("mixins.jeid.thaumcraft.json");

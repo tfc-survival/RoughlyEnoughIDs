@@ -19,7 +19,7 @@ public class MixinBlockSpreadingDeath {
         // Method calls markDirty()
         ((INewChunk) chunk).getIntBiomeArray()[(pos.getZ() & 15) << 4 | pos.getX() & 15] = Biome.getIdForBiome(biome);
         if (!world.isRemote) {
-            MessageManager.sendClientsBiomeChange(world, pos, Biome.getIdForBiome(biome));
+            MessageManager.sendClientsBiomePosChange(world, pos, Biome.getIdForBiome(biome));
         }
     }
 }

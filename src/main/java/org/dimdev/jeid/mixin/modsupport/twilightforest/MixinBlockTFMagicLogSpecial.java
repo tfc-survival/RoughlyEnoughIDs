@@ -21,7 +21,7 @@ public class MixinBlockTFMagicLogSpecial {
      */
     @Inject(method = "sendChangedBiome", at = @At(value = "HEAD"), cancellable = true)
     private void reid$rewriteSendChangedBiome(World world, BlockPos pos, Biome biome, CallbackInfo ci) {
-        MessageManager.sendClientsBiomeChange(world, pos, Biome.getIdForBiome(biome));
+        MessageManager.sendClientsBiomePosChange(world, pos, Biome.getIdForBiome(biome));
         ci.cancel();
     }
 

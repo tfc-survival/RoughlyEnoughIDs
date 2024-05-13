@@ -1,10 +1,10 @@
 {
-  "package": "org.dimdev.jeid.mixin.modsupport.gaiadimension",
+  "package": "org.dimdev.jeid.mixin.modsupport.kathairis",
   "required": true,
   "refmap": "mixins.jeid.refmap.json",
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinGenLayerGDRiverMix"
+    "MixinChunkGeneratorMystic"
   ]
 }
