@@ -98,6 +98,10 @@ repositories {
             includeGroup 'curse.maven'
         }
     }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
     mavenLocal() // Must be last for caching to work
 }
 
@@ -125,7 +129,7 @@ dependencies {
             transitive = false
         }
     }
-    
+    compileOnly rfg.deobf("maven.modrinth:scapeandrunparasites:1.9.20")
     compileOnly rfg.deobf("curse.maven:biomes-o-plenty-220318:2842510")
     compileOnly rfg.deobf("curse.maven:twilightforest-227639:3051450")
     compileOnly rfg.deobf("curse.maven:thaumcraft-223628:2629023")

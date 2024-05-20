@@ -16,7 +16,9 @@ public class JEIDMixinLoader implements ILateMixinLoader {
                 configs.add("mixins.jeid.advancedrocketry.client.json");
             }
         }
-
+        if (Loader.isModLoaded("srparasites")) {
+            configs.add("mixins.jeid.srparasites.json");
+        }
         if (Loader.isModLoaded("abyssalcraft")) {
             configs.add("mixins.jeid.abyssalcraft.json");
         }

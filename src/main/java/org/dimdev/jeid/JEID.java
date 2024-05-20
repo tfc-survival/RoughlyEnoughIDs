@@ -20,6 +20,7 @@ public class JEID {
     public static final String NAME = Tags.MOD_NAME;
     public static final String VERSION = Tags.VERSION;
     public static final String DEPENDENCIES = "required:mixinbooter@[8.0,);"
+        + "after:srparasites;"
         + "after:abyssalcraft;"
         + "after:advancedrocketry;"
         + "after:atum;"
