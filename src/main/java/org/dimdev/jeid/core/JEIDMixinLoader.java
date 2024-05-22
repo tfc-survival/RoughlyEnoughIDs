@@ -16,9 +16,6 @@ public class JEIDMixinLoader implements ILateMixinLoader {
                 configs.add("mixins.jeid.advancedrocketry.client.json");
             }
         }
-        if (Loader.isModLoaded("srparasites")) {
-            configs.add("mixins.jeid.srparasites.json");
-        }
         if (Loader.isModLoaded("abyssalcraft")) {
             configs.add("mixins.jeid.abyssalcraft.json");
         }
@@ -86,6 +83,9 @@ public class JEIDMixinLoader implements ILateMixinLoader {
         }
         if (Loader.isModLoaded("rtg")) {
             configs.add("mixins.jeid.rtg.json");
+        }
+        if (Loader.isModLoaded("srparasites")) {
+            configs.add("mixins.jeid.srparasites.json");
         }
         if (Loader.isModLoaded("thaumcraft")) {
             configs.add("mixins.jeid.thaumcraft.json");
