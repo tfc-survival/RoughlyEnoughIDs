@@ -43,6 +43,7 @@ public class JEID {
         + "after:tofucraft;"
         + "after:tropicraft;"
         + "after:twilightforest;"
+        + "after:wyrmsofnyrus;"
         + "after:worldedit";
     public static final Logger LOGGER = LogManager.getLogger(JEID.NAME);
 
