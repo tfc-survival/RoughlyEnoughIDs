@@ -45,11 +45,10 @@ public class MixinSpreadBiome {
      * @author roguetictac, jchung01
      * @reason Support int biome id for spreading infected biome.
      */
-    @Inject(method = "positionToParasiteBiome", at = @At(value = "HEAD"), cancellable = true)
-    private static void reid$parasiteToIntBiomeArray(World worldIn, BlockPos pos, CallbackInfo ci) {
+    @Inject(method = "positionToParasiteBiome", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getChunk(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/chunk/Chunk;", remap = true), cancellable = true)
+    private static void reid$parasiteToIntBiomeArray(World worldIn, BlockPos pos, CallbackInfo ci,
+                                                     @Local(ordinal = 0) int inChunkX, @Local(ordinal = 1) int inChunkZ) {
         Chunk chunk = worldIn.getChunk(pos);
-        int inChunkX = pos.getX() & 15;
-        int inChunkZ = pos.getZ() & 15;
         chunk.markDirty();
         ((INewChunk) chunk).getIntBiomeArray()[inChunkZ << 4 | inChunkX] = Biome.getIdForBiome(SRPBiomes.biomeInfested);
         ci.cancel();
@@ -59,12 +58,12 @@ public class MixinSpreadBiome {
      * @author roguetictac, jchung01
      * @reason Support int biome id for resetting infected biome.
      */
-    @Inject(method = "positionToBiome", at = @At(value = "HEAD"), cancellable = true)
-    private static void reid$plainsToIntBiomeArray(World worldIn, BlockPos pos, CallbackInfo ci) {
+    @Inject(method = "positionToBiome", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getChunk(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/chunk/Chunk;", remap = true), cancellable = true)
+    private static void reid$plainsToIntBiomeArray(World worldIn, BlockPos pos, CallbackInfo ci,
+                                                   @Local(ordinal = 0) int inChunkX, @Local(ordinal = 1) int inChunkZ) {
+        // Get the originally generated biome.
         Biome original = worldIn.getBiomeProvider().getBiome(pos, Biomes.PLAINS);
         Chunk chunk = worldIn.getChunk(pos);
-        int inChunkX = pos.getX() & 15;
-        int inChunkZ = pos.getZ() & 15;
         chunk.markDirty();
         ((INewChunk) chunk).getIntBiomeArray()[inChunkZ << 4 | inChunkX] = Biome.getIdForBiome(original);
         ci.cancel();
