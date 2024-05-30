@@ -1,6 +1,7 @@
 package org.dimdev.jeid.core;
 
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
 import zone.rong.mixinbooter.ILateMixinLoader;
 
 import java.util.ArrayList;
@@ -105,6 +106,14 @@ public class JEIDMixinLoader implements ILateMixinLoader {
         if (Loader.isModLoaded("worldedit")) {
             configs.add("mixins.jeid.worldedit.json");
         }
+
+        // Checks if the mod is within the version that has the legacy Biome Spread code
+        if (Loader.isModLoaded("wyrmsofnyrus"))
+            //TODO: Doesn't work since this code runs before anything is actually loaded, so we'll need to find another way before v0.6 comes out.
+                // Loader.instance().getCustomModProperties("wyrmsofnyrus").get("version").matches("0.5.[1-9][0-9]{1,3}") )
+            // this checks any version between v0.5.10 (introduced the system) and v0.5.9999 (Impossible number of versions for a LTS version, but let's futureproof it to be safe.)
+            configs.add("mixins.jeid.wyrmsofnyrus.json");
+
 
         return configs;
     }
