@@ -45,7 +45,6 @@ public class JEID {
         + "after:twilightforest;"
         + "after:wyrmsofnyrus;"
         + "after:worldedit";
-    public static final Logger LOGGER = LogManager.getLogger(JEID.NAME);
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
