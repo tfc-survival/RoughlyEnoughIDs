@@ -9,7 +9,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import org.dimdev.jeid.JEID;
+import org.dimdev.jeid.JEIDLogger;
 import org.dimdev.jeid.ducks.INewChunk;
 import org.dimdev.jeid.network.MessageManager;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,7 +27,7 @@ public class MixinCommandSetBiome {
     private void reid$setBiomeArrayElement(MinecraftServer server, ICommandSender sender, String[] args, CallbackInfo ci,
                                            @Local BlockPos coord, @Local World world, @Local(ordinal = 0) int id,
                                            @Local(ordinal = 2) int x, @Local(ordinal = 3) int z, @Local Chunk chunk) {
-        JEID.LOGGER.info("setting biome at {}, {}", x, z);
+        JEIDLogger.LOGGER.info("setting biome at {}, {}", x, z);
         // Method calls markDirty()
         ((INewChunk) chunk).getIntBiomeArray()[(z & 0xF) << 4 | x & 0xF] = id;
     }
