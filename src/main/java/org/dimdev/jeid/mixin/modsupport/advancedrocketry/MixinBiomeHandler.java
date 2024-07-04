@@ -44,4 +44,13 @@ public class MixinBiomeHandler {
         chunk.markDirty();
         // Method sends packet
     }
+
+    @Dynamic("Use int biome array for AR-Reworked (Fork by OberToffel)")
+    @Group(name = "versionAgnosticAR", min = 1, max = 2)
+    @Inject(method = "changeBiome(Lnet/minecraft/world/World;Lnet/minecraft/world/biome/Biome;Lnet/minecraft/util/math/BlockPos;Z)V", at = @At(value = "INVOKE", target = "sendToNearby(Lzmaster587/libVulpes/network/BasePacket;ILnet/minecraft/util/math/BlockPos;D)V", ordinal = 0), locals = LocalCapture.CAPTURE_FAILHARD, require = 0)
+    private static void reid$toIntBiomeArrayFork(World world, Biome biomeId, BlockPos pos, boolean regen_vegetation, CallbackInfo ci, Chunk chunk) {
+        ((INewChunk) chunk).getIntBiomeArray()[(pos.getZ() & 0xF) << 4 | pos.getX() & 0xF] = Biome.getIdForBiome(biomeId);
+        chunk.markDirty();
+        // Method sends packet
+    }
 }
