@@ -21,6 +21,7 @@
     "world.MixinChunkPrimer",
     "world.MixinChunkProviderServer",
     "world.MixinGenLayerVoronoiZoom",
+    "world.MixinStateImplementation",
     "world.MixinWorldInfo"
   ],
   "client": [
