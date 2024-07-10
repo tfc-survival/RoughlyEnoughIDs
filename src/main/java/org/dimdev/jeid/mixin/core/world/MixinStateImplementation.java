@@ -1,6 +1,7 @@
 package org.dimdev.jeid.mixin.core.world;
 
 import com.google.common.collect.*;
+import java.util.*;
 import net.minecraft.block.properties.*;
 import net.minecraft.block.state.BlockStateContainer.*;
 import org.spongepowered.asm.mixin.*;
@@ -20,7 +21,7 @@ public class MixinStateImplementation {
         at = @At("RETURN")
     )
     private void initHashCode(CallbackInfo ci) {
-        hashCodeValue = properties.hashCode();
+        hashCodeValue = Objects.hash(this, properties);
     }
 
     /**
@@ -28,7 +29,7 @@ public class MixinStateImplementation {
      * @reason it should just return value. kinda have no sense to @Inject
      */
     @Overwrite
-    public int hashCode(){
+    public int hashCode() {
         return hashCodeValue;
     }
 
